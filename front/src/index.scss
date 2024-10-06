@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-Regular.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-SemiBold.ttf');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-Bold.ttf');
+  font-weight: 700;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif !important;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--black);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.App {
+  display: flex;
+  align-items: center;
+  height: 100dvh;
+  width: 100%;
+  min-width: 360px;
+  overflow: hidden;
+  background: var(--bg);
+  padding: 0 10px;
+  position: relative;
+  font-size: 12px;
+}

@@ -1,0 +1,14 @@
+.row {
+  display: flex;
+  width: 100%;
+}
+.start {
+  & > *:not(:first-child) {
+    margin-left: 15px;
+  }
+}
+.end {
+  & > *:not(:last-child) {
+    margin-right: 15px;
+  }
+}

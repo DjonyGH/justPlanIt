@@ -1,0 +1,37 @@
+.wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  border-radius: 5px;
+  padding: 5px 7px;
+  margin: 2px 0;
+  &:not(:last-child) {
+    margin-right: 5px;
+  }
+}
+.red {
+  border: 1px solid var(--red);
+  background-color: var(--redLight);
+  color: var(--red);
+}
+.orange {
+  border: 1px solid var(--orange);
+  background-color: var(--orangeLight);
+  color: var(--orange);
+}
+.green {
+  border: 1px solid var(--green);
+  background-color: var(--greenLight);
+  color: var(--green);
+}
+.blue {
+  border: 1px solid var(--blue);
+  background-color: var(--blueLight);
+  color: var(--blue);
+}
+.purple {
+  border: 1px solid var(--purple);
+  background-color: var(--purpleLight);
+  color: var(--purple);
+}

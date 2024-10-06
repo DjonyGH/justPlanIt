@@ -1,0 +1,67 @@
+.ant-table-wrapper .ant-table {
+  background: inherit !important;
+  color: var(--white);
+  border-radius: 8px;
+}
+.ant-table-wrapper .ant-table-thead > tr > th {
+  color: var(--white);
+  font-size: 20px;
+  opacity: 0.8;
+  border-top: none;
+  border-bottom: none;
+}
+.ant-table-wrapper .ant-table:not(.ant-table-bordered) .ant-table-tbody > tr > td {
+  border-bottom: none;
+  border-top: none;
+}
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  color: var(--white);
+  font-size: 18px;
+  opacity: 0.8;
+  border-bottom: none;
+  border-top: none;
+}
+.ant-table-wrapper .ant-table:not(.ant-table-bordered) .ant-table-tbody > tr:last-child > td {
+  border-top: none;
+  border-bottom: none;
+}
+.ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
+  display: none;
+}
+thead[class*='ant-table-thead'] th {
+  background-color: inherit !important;
+  background: inherit !important;
+  color: var(--white);
+}
+table:hover,
+tr:hover,
+thead:hover {
+  background: inherit !important;
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: inherit !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-placeholder:hover {
+  background: inherit !important;
+}
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-placeholder:hover > td {
+  background: inherit !important;
+}
+
+.ant-empty-normal {
+  margin-block: 0;
+}
+
+.ant-empty-normal .ant-empty-image {
+  display: none;
+}
+
+.ant-empty-normal .ant-empty-description {
+  color: var(--white);
+  font-size: 16px;
+}

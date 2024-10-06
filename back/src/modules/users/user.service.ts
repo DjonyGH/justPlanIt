@@ -1,0 +1,78 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
+import { InjectModel } from 'nestjs-typegoose';
+import { USER_NOT_FOUND } from 'src/errors/error.consts';
+import { CreateUserDto } from './dto/create.user.dto';
+import { IUserResponse } from './types';
+import { UserModel } from './user.model';
+import { GUID } from 'src/types';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectModel(UserModel)
+    private readonly userModel: ModelType<UserModel>,
+  ) {}
+
+  async getAllUsers(): Promise<UserModel[]> {
+    console.log('service: getAllUsers');
+    try {
+      return await this.userModel.find();
+    } catch (e: any) {
+      console.error('ERROR: service seed');
+      throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async getUserByTgId(
+    tgId: string,
+    userName?: string,
+    login?: string,
+  ): Promise<UserModel | null> {
+    console.log('service: getUserByTgId');
+    try {
+      const user = await this.userModel.findOne({ tgId });
+      console.log('user', user);
+      if (user) {
+        return user;
+      } else {
+        console.log('no user');
+        const newUser = await this.userModel.create({
+          tgId,
+          login,
+          userName,
+        });
+        console.log('newUser', newUser);
+        if (newUser) {
+          return newUser;
+        }
+      }
+    } catch (e: any) {
+      console.error('ERROR: service getUserByTgId', e);
+      throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async getUserById(id: GUID): Promise<IUserResponse | null> {
+    console.log('service: get user by id');
+    try {
+      return {} as IUserResponse;
+    } catch (e: any) {
+      throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async createUser(user: CreateUserDto) {}
+
+  async updateUser() {}
+
+  async deleteUser() {}
+
+  async findUserByLogin(
+    login: string,
+  ): Promise<DocumentType<UserModel> | null> {
+    return this.userModel.findOne({ login });
+  }
+
+  async setPassword() {}
+}

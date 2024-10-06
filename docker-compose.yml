@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./front
+    container_name: 'front'
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - ./front:/app
+  backend:
+    build: ./back
+    container_name: 'back'
+    restart: always
+    ports:
+      - '3001:3001'
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./back:/app
+  mongo:
+    image: mongo
+    container_name: 'mongodb'
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: just_plan_it
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./back/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongo_data:/data/db
+  adminer:
+    image: dockette/adminer:full
+    container_name: adminer
+    ports:
+      - '8004:80'
+  nginx:
+    image: nginx:1.21-alpine
+    container_name: service.nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 80:80
+    depends_on:
+      - frontend
+      - backend
+volumes:
+  mongo_data:
