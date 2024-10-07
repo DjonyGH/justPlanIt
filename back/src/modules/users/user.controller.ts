@@ -6,7 +6,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { CreateUserDto, NewUserDto } from './dto/create.user.dto';
+import { NewUserDto } from './dto/create.user.dto';
 import { UserService } from './user.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -28,11 +28,11 @@ export class UserController {
     return res;
   }
 
-  @Post()
-  async createUser(@Body() dto: { user: CreateUserDto; code: string }) {
-    console.log('controller: createUser');
-    return this.userSevice.createUser(dto.user);
-  }
+  // @Post()
+  // async createUser(@Body() dto: { user: CreateUserDto; code: string }) {
+  //   console.log('controller: createUser');
+  //   return this.userSevice.createUser(dto.user);
+  // }
 
   @Put(':id')
   @UseGuards(JWTGuard)

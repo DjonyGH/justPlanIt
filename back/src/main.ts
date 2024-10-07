@@ -16,6 +16,7 @@ async function bootstrap() {
   //     'http://192.168.0.105:3000',
   //     'http://3c64-176-196-20-174.ngrok-free.app',
   //     'https://3c64-176-196-20-174.ngrok-free.app',
+  //     'https://7383-176-196-20-174.ngrok-free.app',
   //   ],
   // });
 
@@ -27,7 +28,7 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
-  app.use(user);
+  // app.use(user);
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3001);
 }

@@ -9,16 +9,9 @@ interface IProps {}
 export const Header: React.FC<IProps> = observer(() => {
   const { appStore } = useStore()
 
-  // const tg = window.Telegram.WebApp
-  // const onClose = () => {
-  //   tg.close()
-  // }
-
-  // const { appStore } = useStore()
   return (
     <div className={style.header}>
       <div className={style.leftSide} onClick={() => appStore.tg?.close()}>
-        {/* Евгений К. */}
         {appStore.tg?.initDataUnsafe?.user?.first_name + ' ' + appStore.tg?.initDataUnsafe?.user?.last_name}
       </div>
       <div className={style.rightSide}>{appStore.tg?.initDataUnsafe?.user?.id}</div>

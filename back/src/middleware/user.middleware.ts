@@ -15,6 +15,7 @@ const jwtService = new JwtService({
 });
 
 export function user(req: Request, _: Response, next: NextFunction) {
+  console.log('user middleware');
   const token = req.headers.authorization?.split(' ')[1];
   if (token) {
     try {
