@@ -10,12 +10,18 @@ import { useStore } from '../..'
 interface IProps {}
 
 export const TasksPage: React.FC<IProps> = observer(() => {
-  console.log('MainPage')
+  console.log('TasksPage')
 
   const { tasksStore, userStore } = useStore()
   // const history = useHistory()
 
-  useEffect(() => {}, [userStore.user?.id]) // eslint-disable-line
+  useEffect(() => {
+    if (!userStore.user?.id) return
+
+    tasksStore.fetchTasks()
+  }, [userStore.user?.id]) // eslint-disable-line
+
+  console.log('groupedTasks', tasksStore.groupedTasks)
 
   return (
     <div className={style.mainPage}>

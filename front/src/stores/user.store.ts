@@ -49,6 +49,10 @@ export default class UserStore implements IUserStore {
         //@ts-ignore
         id: data._id,
       })
+      //@ts-ignore
+      document.cookie = `userId=${data._id}`
+      //@ts-ignore
+      sessionStorage.setItem('userId', data._id)
     } catch (e: unknown) {
       console.warn(e)
     } finally {

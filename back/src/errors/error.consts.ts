@@ -20,3 +20,5 @@ export const FORBIDDEN = 'Нет доступа к данной операции
 
 // GENERAL
 export const UNKNOWN_ERROR = 'Неизвестная ошибка';
+
+export const TASKS_NOT_FOUND = 'Задачи не найдены';
