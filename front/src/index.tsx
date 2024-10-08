@@ -8,6 +8,9 @@ import './assets/styles/antOthers.scss'
 import App from './App'
 import { BrowserRouter } from 'react-router-dom'
 import { RootStore } from './stores/root.store'
+import moment from 'moment'
+
+moment.locale('ru')
 
 const store = new RootStore()
 const AppContext = React.createContext(store)

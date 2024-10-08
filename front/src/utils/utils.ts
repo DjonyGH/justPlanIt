@@ -22,6 +22,10 @@ export const getDateTime = (date: string | undefined, isShort?: boolean): string
   return date ? moment(new Date(date)).format(format) : '--'
 }
 
+export const getDayName = (date: string | undefined): string => {
+  return date ? new Date(date).toLocaleString('ru', { weekday: 'long' }) : '--'
+}
+
 export const isDateBefore = (date1: string, date2: string): boolean => {
   return moment(date1).isBefore(moment(date2))
 }

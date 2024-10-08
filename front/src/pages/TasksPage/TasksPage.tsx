@@ -1,76 +1,48 @@
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
-// import { useHistory } from 'react-router-dom'
-import { TextItem } from '../../components/TextItem/TextItem'
 import style from './styles.module.scss'
-
-// import { routes } from '../../routing'
 import { useStore } from '../..'
+import { Checkbox } from 'antd'
+import { ITask } from './types'
+import { getDate, getDayName } from '../../utils/utils'
 
 interface IProps {}
 
 export const TasksPage: React.FC<IProps> = observer(() => {
-  console.log('TasksPage')
-
   const { tasksStore, userStore } = useStore()
-  // const history = useHistory()
 
   useEffect(() => {
     if (!userStore.user?.id) return
-
     tasksStore.fetchTasks()
   }, [userStore.user?.id]) // eslint-disable-line
 
-  console.log('groupedTasks', tasksStore.groupedTasks)
+  const onChange = async (task: ITask, isDone: boolean) => {
+    await tasksStore.completeTasks(task.id, isDone)
+    const tasks = [...tasksStore.tasks]
+    const newTask = tasks.find((i) => i.id === task.id)
+    if (newTask) {
+      newTask.isDone = isDone
+    }
+    tasksStore.setTasks(tasks)
+  }
 
   return (
     <div className={style.mainPage}>
-      <div className={style.info}>
-        <TextItem label='Лига' text={userStore.user?.liga || '---'} />
-        <TextItem label='Очки' text='105.1' />
-        {/* <TextItem label='Очки' text={userStore.user?.id || '---'} /> */}
-        <TextItem label='Место' text='17' />
-        {/* <TextItem label='Место' text={store.userTournaments[0]?.id} />   */}
-      </div>
-
-      <div className={style.logo}></div>
-
-      {/* <div className={style.menu}>
-        <div className={style.menuItem} onClick={() => history.push(routes.rating.path)}>
-          <div className={style.menuLogo}>
-            <TrophyOutlined />
+      {tasksStore.groupedTasks.map((i) => (
+        <div className={style.day} key={i[0].date}>
+          <div className={style.date}>
+            {getDate(i[0].date)} ({getDayName(i[0].date)})
           </div>
-          <div className={style.menuText}>Рейтинг</div>
-        </div>
-
-        <div className={style.menuItem} onClick={() => history.push(routes.friends.path)}>
-          <div className={style.menuLogo}>
-            <TeamOutlined />
+          <div className={style.taskList}>
+            {i.map((task) => (
+              <div className={style.task} key={task.id}>
+                <Checkbox onChange={(e) => onChange(task, e.target.checked)} checked={task.isDone} />
+                <div className={style.title}>{task.title}</div>
+              </div>
+            ))}
           </div>
-          <div className={style.menuText}>Друзья</div>
         </div>
-
-        <div className={style.menuItem} onClick={() => console.log('menuItem')}>
-          <div className={style.menuLogo}>
-            <SketchOutlined />
-          </div>
-          <div className={style.menuText}>Призы</div>
-        </div>
-
-        <div className={style.menuItem} onClick={() => history.push(routes.history.path)}>
-          <div className={style.menuLogo}>
-            <HourglassOutlined />
-          </div>
-          <div className={style.menuText}>История</div>
-        </div>
-
-        <div className={style.menuItem} onClick={() => console.log('menuItem')}>
-          <div className={style.menuLogo}>
-            <QuestionCircleOutlined />
-          </div>
-          <div className={style.menuText}>FAQ</div>
-        </div>
-      </div> */}
+      ))}
     </div>
   )
 })

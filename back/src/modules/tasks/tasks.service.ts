@@ -23,6 +23,23 @@ export class TasksService {
     }
   }
 
+  async completeTask(taskId: GUID, isDone: boolean): Promise<TaskModel | null> {
+    console.log('service: completeTask');
+    try {
+      return this.tasksModel.findByIdAndUpdate(
+        taskId,
+        { isDone },
+        {
+          new: true,
+          upsert: true,
+        },
+      );
+    } catch (e: any) {
+      console.error('ERROR: service getAllTasksByUserId', e);
+      throw new HttpException(TASKS_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
   async createTask() {}
 
   async updateTask() {}
