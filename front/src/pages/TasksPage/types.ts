@@ -6,3 +6,8 @@ export interface ITask extends IBaseItem {
   date: string
   userId: string
 }
+
+export interface INewTask {
+  title: string
+  date: string
+}

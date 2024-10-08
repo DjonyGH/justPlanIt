@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
-import { ITask } from '../types'
+import { INewTask, ITask } from '../types'
 import http from '../../../services/http.service'
 
 export interface ITasksStore {
@@ -9,6 +9,7 @@ export interface ITasksStore {
   setTasks: (data: ITask[]) => void
   fetchTasks: () => Promise<void>
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
+  createTask: (newTask: INewTask) => Promise<ITask | undefined>
 }
 
 export default class TasksStore implements ITasksStore {
@@ -37,8 +38,23 @@ export default class TasksStore implements ITasksStore {
   async completeTasks(taskId: string, isDone: boolean) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
-      let newTask: ITask = await http.put<ITask>(`/tasks/${taskId}`, { isDone })
-      console.log('newTask', newTask)
+      await http.put<ITask>(`/tasks/${taskId}`, { isDone })
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
+  async createTask(newTask: INewTask) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      let createdTask: ITask = await http.post<ITask>(`/tasks`, newTask)
+      console.log('newTask', createdTask)
+      return {
+        ...createdTask,
+        id: createdTask._id,
+      }
     } catch (e: unknown) {
       console.warn(e)
     } finally {
