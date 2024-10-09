@@ -12,8 +12,7 @@ export class TaskModel extends TimeStamps {
   @prop({ required: true })
   isDone: boolean;
 
-  @prop({ required: true })
-  date: string;
+  date?: string;
 
   @prop({ required: true })
   order: number;

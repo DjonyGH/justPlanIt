@@ -9,3 +9,7 @@ export class CompleteTaskDto {
   @IsBoolean()
   isDone: boolean;
 }
+
+export class ChangeOrderTaskDto {
+  changeOrder: 1 | -1;
+}
