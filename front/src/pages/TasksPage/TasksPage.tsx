@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../..'
 import { Checkbox, Form, Modal, Input, DatePicker } from 'antd'
-import { INewTask, ITask } from './types'
+import { EMode, INewTask, ITask } from './types'
 import { getDate, getDateUTC, getDayName } from '../../utils/utils'
 import { Button } from '../../components/Button/Button'
 import dayjs from 'dayjs'
@@ -14,12 +14,30 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const { tasksStore, userStore } = useStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isWithoutDate, setIsWithoutDate] = useState(false)
+  const [mode, setMode] = useState<EMode>(EMode.Create)
+  const [idTask, setIdTask] = useState<string | undefined>()
   const [form] = Form.useForm()
 
   useEffect(() => {
     if (!userStore.user?.id) return
     tasksStore.fetchTasks()
   }, [userStore.user?.id]) // eslint-disable-line
+
+  const onCreate = () => {
+    setMode(EMode.Create)
+    setIsModalOpen(true)
+    form.resetFields()
+    setIdTask(undefined)
+  }
+
+  const onEdit = (task: ITask) => {
+    setMode(EMode.Edit)
+    setIsModalOpen(true)
+    form.setFieldValue('title', task.title)
+    form.setFieldValue('date', dayjs(task.date))
+    setIsWithoutDate(!task.date)
+    setIdTask(task.id)
+  }
 
   const onChange = async (task: ITask, isDone: boolean) => {
     await tasksStore.completeTasks(task.id, isDone)
@@ -34,10 +52,18 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
     newTask.date = isWithoutDate || !newTask.date ? undefined : getDateUTC(newTask.date)
-    const createdTask = await tasksStore.createTask(newTask)
-    if (createdTask) {
-      const tasks = [createdTask, ...tasksStore.tasks]
-      tasksStore.setTasks(tasks)
+    let isSuccess
+    if (mode === EMode.Create) {
+      isSuccess = await tasksStore.createTask(newTask)
+    }
+    if (mode === EMode.Edit && idTask) {
+      isSuccess = await tasksStore.updateTask(idTask, newTask)
+    }
+    console.log('isSuccess', isSuccess)
+    if (isSuccess) {
+      tasksStore.fetchTasks()
+      // const tasks = [createdTask, ...tasksStore.tasks]
+      // tasksStore.setTasks(tasks)
       form.resetFields()
       setIsModalOpen(false)
     }
@@ -67,7 +93,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   return (
     <div className={style.mainPage}>
       <div className={style.menu}>
-        <Button text='Создать' size='min' onClick={() => setIsModalOpen(true)} />
+        <Button text='Создать' size='min' onClick={onCreate} />
       </div>
       {tasksStore.groupedTasks.map((i) => (
         <div className={style.day} key={i[0].date}>
@@ -85,17 +111,25 @@ export const TasksPage: React.FC<IProps> = observer(() => {
                   <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
                   <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
                   <Button text='I' size='square' onClick={() => toNextDay(task.id)} />
+                  <Button text='E' size='square' onClick={() => onEdit(task)} />
                 </div>
               ))}
           </div>
         </div>
       ))}
       <Modal
-        title='Новая задача'
+        title={mode === EMode.Create ? 'Новая задача' : 'Редактирование'}
         open={isModalOpen}
         onOk={() => setIsModalOpen(false)}
         onCancel={() => setIsModalOpen(false)}
-        footer={[<Button key={1} text='Создать' size='min' onClick={() => form.submit()} />]}
+        footer={[
+          <Button
+            key={1}
+            text={mode === EMode.Create ? 'Создать' : 'Редактировать'}
+            size='min'
+            onClick={() => form.submit()}
+          />,
+        ]}
       >
         <Form
           name='basic'

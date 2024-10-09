@@ -13,6 +13,7 @@ export interface ITasksStore {
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   createTask: (newTask: INewTask) => Promise<ITask | undefined>
+  updateTask: (taskId: string, newTask: INewTask) => Promise<ITask | undefined>
   removeTask: (taskId: string) => Promise<boolean | undefined>
 }
 
@@ -42,7 +43,7 @@ export default class TasksStore implements ITasksStore {
   async completeTasks(taskId: string, isDone: boolean) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
-      await http.put<ITask>(`/tasks/${taskId}`, { isDone })
+      await http.put<ITask>(`/tasks/${taskId}/complete`, { isDone })
     } catch (e: unknown) {
       console.warn(e)
     } finally {
@@ -82,6 +83,21 @@ export default class TasksStore implements ITasksStore {
       return {
         ...createdTask,
         id: createdTask._id,
+      }
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
+  async updateTask(taskId: string, newTask: INewTask) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      let updatedTask: ITask = await http.put<ITask>(`/tasks/${taskId}`, newTask)
+      return {
+        ...updatedTask,
+        id: updatedTask._id,
       }
     } catch (e: unknown) {
       console.warn(e)

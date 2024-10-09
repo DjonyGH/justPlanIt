@@ -12,3 +12,8 @@ export interface INewTask {
   title: string
   date?: string
 }
+
+export enum EMode {
+  Edit,
+  Create,
+}
