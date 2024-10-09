@@ -17,6 +17,14 @@ export const getDate = (date: string | undefined): string => {
   return date ? moment(new Date(date)).format('DD.MM.YYYY') : '--'
 }
 
+export const getDateUTC = (value: string): string => {
+  const date = new Date(value)
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
+  const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
+  return `${year}-${month}-${day}`
+}
+
 export const getDateTime = (date: string | undefined, isShort?: boolean): string => {
   const format = isShort ? 'DD.MM.YY HH:mm' : 'DD.MM.YYYY HH:mm'
   return date ? moment(new Date(date)).format(format) : '--'

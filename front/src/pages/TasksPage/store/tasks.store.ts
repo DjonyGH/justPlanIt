@@ -9,7 +9,10 @@ export interface ITasksStore {
   setTasks: (data: ITask[]) => void
   fetchTasks: () => Promise<void>
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
+  changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
+  sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   createTask: (newTask: INewTask) => Promise<ITask | undefined>
+  removeTask: (taskId: string) => Promise<boolean | undefined>
 }
 
 export default class TasksStore implements ITasksStore {
@@ -46,6 +49,30 @@ export default class TasksStore implements ITasksStore {
     }
   }
 
+  async changeOrderTask(taskId: string, changeOrder: 1 | -1) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.put<ITask>(`/tasks/${taskId}/order`, { changeOrder })
+      return true
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
+  async sendToNextDay(taskId: string) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.put<ITask>(`/tasks/${taskId}/next-day`, {})
+      return true
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
   async createTask(newTask: INewTask) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
@@ -62,6 +89,18 @@ export default class TasksStore implements ITasksStore {
     }
   }
 
+  async removeTask(id: string) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.delete<ITask>(`/tasks/${id}`)
+      return true
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
   get groupedTasks() {
     const tasks: Record<string, ITask[]> = this.tasks.reduce((acc, i) => {
       if (!(i.date in acc)) {
@@ -71,7 +110,9 @@ export default class TasksStore implements ITasksStore {
       return acc
     }, {} as Record<string, ITask[]>)
 
-    return Object.values(tasks)
+    return Object.keys(tasks)
+      .sort((a, b) => Date.parse(b) - Date.parse(a))
+      .map((key) => tasks[key])
   }
 
   clear() {}

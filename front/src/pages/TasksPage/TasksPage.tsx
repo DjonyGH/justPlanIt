@@ -4,7 +4,7 @@ import style from './styles.module.scss'
 import { useStore } from '../..'
 import { Checkbox, Form, Modal, Input, DatePicker } from 'antd'
 import { INewTask, ITask } from './types'
-import { getDate, getDayName } from '../../utils/utils'
+import { getDate, getDateUTC, getDayName } from '../../utils/utils'
 import { Button } from '../../components/Button/Button'
 import dayjs from 'dayjs'
 
@@ -32,6 +32,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
 
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
+    newTask.date = getDateUTC(newTask.date)
     const createdTask = await tasksStore.createTask(newTask)
     if (createdTask) {
       const tasks = [createdTask, ...tasksStore.tasks]
@@ -39,6 +40,27 @@ export const TasksPage: React.FC<IProps> = observer(() => {
       form.resetFields()
       setIsModalOpen(false)
     }
+  }
+
+  const removeTask = async (id: string) => {
+    const isSucces = await tasksStore.removeTask(id)
+    if (isSucces) {
+      const tasks = tasksStore.tasks.filter((i) => i.id !== id)
+      tasksStore.setTasks(tasks)
+    }
+  }
+
+  const orderDown = async (id: string) => {
+    const isSuccess = await tasksStore.changeOrderTask(id, -1)
+    isSuccess && tasksStore.fetchTasks()
+  }
+  const orderUp = async (id: string) => {
+    const isSuccess = await tasksStore.changeOrderTask(id, 1)
+    isSuccess && tasksStore.fetchTasks()
+  }
+  const toNextDay = async (id: string) => {
+    const isSuccess = await tasksStore.sendToNextDay(id)
+    isSuccess && tasksStore.fetchTasks()
   }
 
   return (
@@ -52,12 +74,18 @@ export const TasksPage: React.FC<IProps> = observer(() => {
             {getDate(i[0].date)} ({getDayName(i[0].date)})
           </div>
           <div className={style.taskList}>
-            {i.map((task) => (
-              <div className={style.task} key={task.id}>
-                <Checkbox onChange={(e) => onChange(task, e.target.checked)} checked={task.isDone} />
-                <div className={style.title}>{task.title}</div>
-              </div>
-            ))}
+            {i
+              .sort((a, b) => a.order - b.order)
+              .map((task, idx, arr) => (
+                <div className={style.task} key={task.id}>
+                  <Checkbox onChange={(e) => onChange(task, e.target.checked)} checked={task.isDone} />
+                  <div className={style.title}>{task.order + '. ' + task.title}</div>
+                  <Button text='x' size='square' onClick={() => removeTask(task.id)} />
+                  <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
+                  <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
+                  <Button text='I' size='square' onClick={() => toNextDay(task.id)} />
+                </div>
+              ))}
           </div>
         </div>
       ))}

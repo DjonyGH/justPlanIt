@@ -5,6 +5,7 @@ export interface ITask extends IBaseItem {
   isDone: boolean
   date: string
   userId: string
+  order: number
 }
 
 export interface INewTask {

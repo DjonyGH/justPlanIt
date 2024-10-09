@@ -71,6 +71,16 @@ class HttpService implements IHttpService {
       throw new Error(`${error}`)
     }
   }
+
+  async delete<T>(url: string): Promise<T> {
+    try {
+      const { data } = await this.http.delete<T, AxiosResponse<T>>(url)
+      if (data) return data
+      throw new Error('error of deleting')
+    } catch (error) {
+      throw new Error(`${error}`)
+    }
+  }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
