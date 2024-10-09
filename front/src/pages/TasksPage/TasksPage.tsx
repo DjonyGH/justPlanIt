@@ -13,6 +13,7 @@ interface IProps {}
 export const TasksPage: React.FC<IProps> = observer(() => {
   const { tasksStore, userStore } = useStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isWithoutDate, setIsWithoutDate] = useState(false)
   const [form] = Form.useForm()
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
 
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
-    newTask.date = getDateUTC(newTask.date)
+    newTask.date = isWithoutDate || !newTask.date ? undefined : getDateUTC(newTask.date)
     const createdTask = await tasksStore.createTask(newTask)
     if (createdTask) {
       const tasks = [createdTask, ...tasksStore.tasks]
@@ -110,7 +111,13 @@ export const TasksPage: React.FC<IProps> = observer(() => {
           </Form.Item>
 
           <Form.Item<INewTask> name='date' initialValue={dayjs()}>
-            <DatePicker placeholder='Дата' format={'DD.MM.YYYY'} minDate={dayjs()} />
+            <DatePicker placeholder='Дата' format={'DD.MM.YYYY'} minDate={dayjs()} disabled={isWithoutDate} />
+          </Form.Item>
+
+          <Form.Item>
+            <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
+              Без даты
+            </Checkbox>
           </Form.Item>
         </Form>
       </Modal>

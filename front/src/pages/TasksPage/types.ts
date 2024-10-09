@@ -10,5 +10,5 @@ export interface ITask extends IBaseItem {
 
 export interface INewTask {
   title: string
-  date: string
+  date?: string
 }

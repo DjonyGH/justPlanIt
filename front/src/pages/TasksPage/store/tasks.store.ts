@@ -6,6 +6,7 @@ import http from '../../../services/http.service'
 export interface ITasksStore {
   tasks: ITask[]
   groupedTasks: ITask[][]
+  tasksWithoutDate: ITask[]
   setTasks: (data: ITask[]) => void
   fetchTasks: () => Promise<void>
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
@@ -102,17 +103,23 @@ export default class TasksStore implements ITasksStore {
   }
 
   get groupedTasks() {
-    const tasks: Record<string, ITask[]> = this.tasks.reduce((acc, i) => {
-      if (!(i.date in acc)) {
-        acc[i.date] = []
-      }
-      acc[i.date].push(i)
-      return acc
-    }, {} as Record<string, ITask[]>)
+    const tasks: Record<string, ITask[]> = this.tasks
+      .filter((i) => !!i.date)
+      .reduce((acc, i) => {
+        if (!(i.date in acc)) {
+          acc[i.date] = []
+        }
+        acc[i.date].push(i)
+        return acc
+      }, {} as Record<string, ITask[]>)
 
     return Object.keys(tasks)
       .sort((a, b) => Date.parse(b) - Date.parse(a))
       .map((key) => tasks[key])
+  }
+
+  get tasksWithoutDate() {
+    return this.tasks.filter((i) => !i.date)
   }
 
   clear() {}
