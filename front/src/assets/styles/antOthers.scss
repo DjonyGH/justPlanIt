@@ -89,8 +89,9 @@
 .ant-input-password,
 .ant-input:hover,
 .ant-input-password:hover .ant-input-focused {
-  border: 2px solid var(--violet);
+  border: 1px solid var(--blue);
   background: inherit !important;
+  color: var(--white);
   .ant-input-number-input {
     color: var(--white);
     outline: none;
@@ -175,4 +176,8 @@ input.ant-input:-webkit-autofill:focus {
   .ant-select-item-option-selected {
     background: var(--violet342) !important;
   }
+}
+
+.ant-form-item {
+  margin-bottom: 10px !important;
 }

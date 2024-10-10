@@ -2,12 +2,26 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../..'
-import { Checkbox, Form, Modal, Input, DatePicker } from 'antd'
+import { Checkbox, Form, DatePicker, ConfigProvider, Tooltip } from 'antd'
 import { EMode, INewTask, ITask } from './types'
 import { getDate, getDateUTC, getDayName, isPastDate, ucFirst } from '../../utils/utils'
 import { Button } from '../../components/Button/Button'
 import dayjs from 'dayjs'
-import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  BarsOutlined,
+  CaretDownOutlined,
+  CaretUpOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FastForwardOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
+import TextArea from 'antd/es/input/TextArea'
+import ru_RU from 'antd/lib/locale/ru_RU'
+
+dayjs.locale('ru')
 
 enum ETab {
   Current,
@@ -21,6 +35,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const { tasksStore, userStore } = useStore()
   const [tab, setTab] = useState<ETab>(ETab.Current)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const [isWithoutDate, setIsWithoutDate] = useState(false)
   const [mode, setMode] = useState<EMode>(EMode.Create)
   const [idTask, setIdTask] = useState<string | undefined>()
@@ -83,20 +98,24 @@ export const TasksPage: React.FC<IProps> = observer(() => {
     if (isSucces) {
       const tasks = tasksStore.tasks.filter((i) => i.id !== id)
       tasksStore.setTasks(tasks)
+      setIsTooltipOpen(false)
     }
   }
 
   const orderDown = async (id: string) => {
     const isSuccess = await tasksStore.changeOrderTask(id, -1)
     isSuccess && tasksStore.fetchTasks()
+    setIsTooltipOpen(false)
   }
   const orderUp = async (id: string) => {
     const isSuccess = await tasksStore.changeOrderTask(id, 1)
     isSuccess && tasksStore.fetchTasks()
+    setIsTooltipOpen(false)
   }
   const toNextDay = async (id: string) => {
     const isSuccess = await tasksStore.sendToNextDay(id)
     isSuccess && tasksStore.fetchTasks()
+    setIsTooltipOpen(false)
   }
 
   const groupedTasks: Record<ETab.Current | ETab.Future, ITask[][]> = {
@@ -149,6 +168,42 @@ export const TasksPage: React.FC<IProps> = observer(() => {
                     </div>
 
                     <div className={style.title}>{task.title}</div>
+                    {!isPastDate(task.date) && (
+                      <div className={style.edit}>
+                        <Tooltip
+                          placement='bottomLeft'
+                          fresh
+                          mouseLeaveDelay={0}
+                          open={isTooltipOpen}
+                          title={
+                            <div className={style.controls}>
+                              <CaretUpOutlined
+                                style={{ color: 'var(--gray)', fontSize: '20px' }}
+                                onClick={() => orderDown(task.id)}
+                              />
+                              <CaretDownOutlined
+                                style={{ color: 'var(--gray)', fontSize: '20px' }}
+                                onClick={() => orderUp(task.id)}
+                              />
+                              <FastForwardOutlined
+                                style={{ color: 'var(--gray)', fontSize: '20px' }}
+                                onClick={() => toNextDay(task.id)}
+                              />
+                              <EditOutlined
+                                style={{ color: 'var(--gray)', fontSize: '20px' }}
+                                onClick={() => onEdit(task)}
+                              />
+                              <DeleteOutlined
+                                style={{ color: 'var(--red)', fontSize: '20px' }}
+                                onClick={() => removeTask(task.id)}
+                              />
+                            </div>
+                          }
+                        >
+                          <BarsOutlined style={{ fontSize: '16px' }} onClick={() => setIsTooltipOpen(true)} />
+                        </Tooltip>
+                      </div>
+                    )}
                     {/* <Button text='x' size='square' onClick={() => removeTask(task.id)} />
                   <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
                   <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
@@ -173,7 +228,14 @@ export const TasksPage: React.FC<IProps> = observer(() => {
                   {!!task.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
                 </div>
 
-                <div className={style.title}>{task.title}</div>
+                <div className={style.title} onClick={(e) => console.log('!!!', e)}>
+                  {task.title}
+                </div>
+                {!isPastDate(task.date) && (
+                  <div className={style.edit}>
+                    <EditOutlined style={{ fontSize: '16px' }} />
+                  </div>
+                )}
                 {/* <Button text='x' size='square' onClick={() => removeTask(task.id)} />
                   <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
                   <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
@@ -183,44 +245,61 @@ export const TasksPage: React.FC<IProps> = observer(() => {
             ))}
         </div>
       )}
-      <Modal
-        title={mode === EMode.Create ? 'Новая задача' : 'Редактирование'}
-        open={isModalOpen}
-        onOk={() => setIsModalOpen(false)}
-        onCancel={() => setIsModalOpen(false)}
-        footer={[
-          <Button
-            key={1}
-            text={mode === EMode.Create ? 'Создать' : 'Редактировать'}
-            size='min'
-            onClick={() => form.submit()}
-          />,
-        ]}
-      >
-        <Form
-          name='basic'
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          initialValues={{ remember: true }}
-          form={form}
-          onFinish={onSubmit}
-        >
-          <Form.Item<INewTask> name='title' rules={[{ required: true, message: 'Обязательное поле' }]}>
-            <Input placeholder='Описание задачи' />
-          </Form.Item>
 
-          <Form.Item<INewTask> name='date' initialValue={dayjs()}>
-            <DatePicker placeholder='Дата' format={'DD.MM.YYYY'} minDate={dayjs()} disabled={isWithoutDate} />
-          </Form.Item>
+      {isModalOpen && (
+        <div className={style.modal}>
+          <div className={style.header}>
+            {mode === EMode.Create ? 'Новая задача' : 'Редактирование'}
+            <div onClick={() => setIsModalOpen(false)}>
+              <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
+            </div>
+          </div>
 
-          <Form.Item>
-            <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
-              Без даты
-            </Checkbox>
-          </Form.Item>
-        </Form>
-      </Modal>
+          <div className={style.body}>
+            <Form
+              name='basic'
+              style={{ width: '100%' }}
+              initialValues={{ remember: true }}
+              form={form}
+              onFinish={onSubmit}
+            >
+              <Form.Item<INewTask> name='title' rules={[{ required: true, message: 'Обязательное поле' }]}>
+                <TextArea autoSize={{ minRows: 3, maxRows: 3 }} placeholder='Описание задачи' />
+              </Form.Item>
+
+              <ConfigProvider locale={ru_RU}>
+                <Form.Item<INewTask> name='date' initialValue={dayjs()}>
+                  <DatePicker
+                    placeholder='Дата'
+                    format={'DD.MM.YYYY'}
+                    minDate={dayjs()}
+                    disabled={isWithoutDate}
+                    allowClear={false}
+                    inputReadOnly
+                  />
+                </Form.Item>
+              </ConfigProvider>
+
+              <Form.Item>
+                <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
+                  Без даты
+                </Checkbox>
+              </Form.Item>
+            </Form>
+          </div>
+          <div className={style.footer}>
+            <Button
+              key={1}
+              text={mode === EMode.Create ? 'Создать' : 'Редактировать'}
+              size='min'
+              type='primary'
+              onClick={() => form.submit()}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className={style.editModal}></div>
     </div>
   )
 })
