@@ -2,10 +2,12 @@ import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
 import { INewTask, ITask } from '../types'
 import http from '../../../services/http.service'
+import { isCurrentDate, isFutureDate } from '../../../utils/utils'
 
 export interface ITasksStore {
   tasks: ITask[]
-  groupedTasks: ITask[][]
+  currentTasks: ITask[][]
+  futureTasks: ITask[][]
   tasksWithoutDate: ITask[]
   setTasks: (data: ITask[]) => void
   fetchTasks: () => Promise<void>
@@ -78,6 +80,7 @@ export default class TasksStore implements ITasksStore {
   async createTask(newTask: INewTask) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
+      console.log('newTask', newTask)
       let createdTask: ITask = await http.post<ITask>(`/tasks`, newTask)
       console.log('newTask', createdTask)
       return {
@@ -118,9 +121,25 @@ export default class TasksStore implements ITasksStore {
     }
   }
 
-  get groupedTasks() {
+  get currentTasks() {
     const tasks: Record<string, ITask[]> = this.tasks
-      .filter((i) => !!i.date)
+      .filter((i) => !!i.date && isCurrentDate(i.date))
+      .reduce((acc, i) => {
+        if (!(i.date in acc)) {
+          acc[i.date] = []
+        }
+        acc[i.date].push(i)
+        return acc
+      }, {} as Record<string, ITask[]>)
+
+    return Object.keys(tasks)
+      .sort((a, b) => Date.parse(b) - Date.parse(a))
+      .map((key) => tasks[key])
+  }
+
+  get futureTasks() {
+    const tasks: Record<string, ITask[]> = this.tasks
+      .filter((i) => !!i.date && isFutureDate(i.date))
       .reduce((acc, i) => {
         if (!(i.date in acc)) {
           acc[i.date] = []

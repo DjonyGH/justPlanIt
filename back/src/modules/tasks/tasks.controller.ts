@@ -67,7 +67,7 @@ export class TasksController {
     @Session() session: Record<string, any>,
     @Body() task: CreateTaskDto,
   ) {
-    console.log('controller: completeTask');
+    console.log('controller: createTask', task);
     const userId = getGUIDFromString(session.userId);
     return this.tasksSevice.createTask(task, userId);
   }

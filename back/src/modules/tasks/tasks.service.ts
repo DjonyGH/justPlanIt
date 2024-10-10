@@ -109,7 +109,7 @@ export class TasksService {
   }
 
   async createTask(task: CreateTaskDto, userId: GUID) {
-    console.log('service: createTask');
+    console.log('service: createTask', task);
     const tasks = await this.tasksModel.find({ userId, date: task.date });
     const maxOrder = tasks.length ? Math.max(...tasks.map((i) => i.order)) : 0;
     try {
@@ -119,6 +119,7 @@ export class TasksService {
         order: maxOrder + 1,
         isDone: false,
       };
+      console.log('newTask', newTask);
       return this.tasksModel.create(newTask);
     } catch (e: any) {
       console.error('ERROR: service createTask', e);

@@ -11,6 +11,7 @@
   overflow: hidden;
   outline: none;
   cursor: pointer;
+  user-select: none;
   s &:active {
     opacity: 0.75;
   }
@@ -19,21 +20,17 @@
   width: 160px;
 }
 .min {
-  width: 100px;
+  width: 80px;
   height: 30px;
 }
 .square {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
 }
 .default {
-  border: 1px solid var(--violet);
+  border: 1px solid var(--bgLight);
   background: inherit;
-  color: var(--violet);
-  &:hover {
-    background: var(--violetLight);
-    color: var(--white);
-  }
+  color: var(--white);
   &:disabled {
     border: 1px solid var(--violet);
     cursor: not-allowed;
@@ -41,12 +38,8 @@
 }
 .primary {
   border: none;
-  background: var(--violet);
-  &:hover {
-    border: 1px solid var(--violet);
-    color: var(--white);
-    background: var(--violetLight);
-  }
+  background: var(--bgLight);
+  color: var(--white);
   &:disabled {
     cursor: not-allowed;
     background: var(--violetLight);

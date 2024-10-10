@@ -4,14 +4,22 @@ import style from './styles.module.scss'
 import { useStore } from '../..'
 import { Checkbox, Form, Modal, Input, DatePicker } from 'antd'
 import { EMode, INewTask, ITask } from './types'
-import { getDate, getDateUTC, getDayName } from '../../utils/utils'
+import { getDate, getDateUTC, getDayName, isPastDate, ucFirst } from '../../utils/utils'
 import { Button } from '../../components/Button/Button'
 import dayjs from 'dayjs'
+import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons'
+
+enum ETab {
+  Current,
+  Future,
+  WithoutDate,
+}
 
 interface IProps {}
 
 export const TasksPage: React.FC<IProps> = observer(() => {
   const { tasksStore, userStore } = useStore()
+  const [tab, setTab] = useState<ETab>(ETab.Current)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isWithoutDate, setIsWithoutDate] = useState(false)
   const [mode, setMode] = useState<EMode>(EMode.Create)
@@ -52,6 +60,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
     newTask.date = isWithoutDate || !newTask.date ? undefined : getDateUTC(newTask.date)
+    console.log('newTask.date', newTask.date)
     let isSuccess
     if (mode === EMode.Create) {
       isSuccess = await tasksStore.createTask(newTask)
@@ -59,7 +68,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
     if (mode === EMode.Edit && idTask) {
       isSuccess = await tasksStore.updateTask(idTask, newTask)
     }
-    console.log('isSuccess', isSuccess)
+
     if (isSuccess) {
       tasksStore.fetchTasks()
       // const tasks = [createdTask, ...tasksStore.tasks]
@@ -90,33 +99,90 @@ export const TasksPage: React.FC<IProps> = observer(() => {
     isSuccess && tasksStore.fetchTasks()
   }
 
+  const groupedTasks: Record<ETab.Current | ETab.Future, ITask[][]> = {
+    [ETab.Current]: tasksStore.currentTasks,
+    [ETab.Future]: tasksStore.futureTasks,
+  }
+
   return (
     <div className={style.mainPage}>
       <div className={style.menu}>
-        <Button text='Создать' size='min' onClick={onCreate} />
+        <div className={style.leftSide}>
+          <Button
+            text='Текущие'
+            size='min'
+            type={tab === ETab.Current ? 'primary' : 'default'}
+            onClick={() => setTab(ETab.Current)}
+          />
+          <Button
+            text='Будущие'
+            size='min'
+            type={tab === ETab.Future ? 'primary' : 'default'}
+            onClick={() => setTab(ETab.Future)}
+          />
+          <Button
+            text='Без даты'
+            size='min'
+            type={tab === ETab.WithoutDate ? 'primary' : 'default'}
+            onClick={() => setTab(ETab.WithoutDate)}
+          />
+        </div>
+        <Button text={() => <PlusOutlined />} type='primary' size='square' onClick={onCreate} />
       </div>
-      {tasksStore.groupedTasks.map((i) => (
-        <div className={style.day} key={i[0].date}>
-          <div className={style.date}>
-            {getDate(i[0].date)} ({getDayName(i[0].date)})
-          </div>
-          <div className={style.taskList}>
-            {i
-              .sort((a, b) => a.order - b.order)
-              .map((task, idx, arr) => (
-                <div className={style.task} key={task.id}>
-                  <Checkbox onChange={(e) => onChange(task, e.target.checked)} checked={task.isDone} />
-                  <div className={style.title}>{task.order + '. ' + task.title}</div>
-                  <Button text='x' size='square' onClick={() => removeTask(task.id)} />
+      {tab !== ETab.WithoutDate &&
+        groupedTasks[tab].map((i) => (
+          <div className={style.day} key={i[0].date}>
+            <div className={style.date}>
+              {getDate(i[0].date)} {ucFirst(getDayName(i[0].date))}
+            </div>
+            <div className={style.taskList}>
+              {i
+                .sort((a, b) => a.order - b.order)
+                .map((task, idx, arr) => (
+                  <div className={style.task} key={task.id}>
+                    <div className={style.checkbox} onClick={(e) => onChange(task, !task.isDone)}>
+                      {!task.isDone && !isPastDate(task.date) && <div className={style.empty} />}
+                      {!task.isDone && isPastDate(task.date) && (
+                        <CloseOutlined style={{ color: 'var(--red)', fontSize: '18px' }} />
+                      )}
+                      {!!task.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
+                    </div>
+
+                    <div className={style.title}>{task.title}</div>
+                    {/* <Button text='x' size='square' onClick={() => removeTask(task.id)} />
                   <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
                   <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
                   <Button text='I' size='square' onClick={() => toNextDay(task.id)} />
-                  <Button text='E' size='square' onClick={() => onEdit(task)} />
-                </div>
-              ))}
+                  <Button text='E' size='square' onClick={() => onEdit(task)} /> */}
+                  </div>
+                ))}
+            </div>
           </div>
+        ))}
+      {tab === ETab.WithoutDate && (
+        <div className={style.taskList}>
+          {tasksStore.tasksWithoutDate
+            .sort((a, b) => a.order - b.order)
+            .map((task, idx, arr) => (
+              <div className={style.task} key={task.id}>
+                <div className={style.checkbox} onClick={(e) => onChange(task, !task.isDone)}>
+                  {!task.isDone && !isPastDate(task.date) && <div className={style.empty} />}
+                  {!task.isDone && isPastDate(task.date) && (
+                    <CloseOutlined style={{ color: 'var(--red)', fontSize: '18px' }} />
+                  )}
+                  {!!task.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
+                </div>
+
+                <div className={style.title}>{task.title}</div>
+                {/* <Button text='x' size='square' onClick={() => removeTask(task.id)} />
+                  <Button text='A' size='square' disabled={!idx} onClick={() => orderDown(task.id)} />
+                  <Button text='V' size='square' disabled={idx === arr.length - 1} onClick={() => orderUp(task.id)} />
+                  <Button text='I' size='square' onClick={() => toNextDay(task.id)} />
+                  <Button text='E' size='square' onClick={() => onEdit(task)} /> */}
+              </div>
+            ))}
         </div>
-      ))}
+      )}
       <Modal
         title={mode === EMode.Create ? 'Новая задача' : 'Редактирование'}
         open={isModalOpen}
