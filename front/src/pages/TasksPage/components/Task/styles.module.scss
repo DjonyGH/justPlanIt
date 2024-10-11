@@ -3,6 +3,12 @@
   justify-content: flex-start;
   width: 100%;
   gap: 8px;
+  transition: none;
+}
+.up {
+  transform: translateY(-60px);
+  z-index: 10;
+  transition: transform 1s ease-in-out;
 }
 .title {
   display: flex;
@@ -41,6 +47,17 @@
 .expanded {
   padding: 0 10px;
   width: 140px;
+}
+
+.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .checkbox {

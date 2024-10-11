@@ -10,7 +10,11 @@ import {
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { getGUIDFromString } from 'src/utils/getObjectIdFromString';
-import { ChangeOrderTaskDto, CompleteTaskDto } from './dto/update.task.dto';
+import {
+  ChangeOrderTaskDto,
+  CompleteTaskDto,
+  CurrentDateDto,
+} from './dto/update.task.dto';
 import { CreateTaskDto } from './dto/create.task.dto';
 import { INewTask } from './types';
 
@@ -51,6 +55,17 @@ export class TasksController {
     console.log('controller: sendTaskToNextDay');
     const taskId = getGUIDFromString(_id);
     return this.tasksSevice.sendTaskToNextDay(taskId);
+  }
+
+  // Переносит задачу на текущий день
+  @Put(':id/current-day')
+  async sendTaskToCurrentDay(
+    @Param('id') _id: string,
+    @Body() data: CurrentDateDto,
+  ) {
+    console.log('controller: sendTaskToCurrentDay');
+    const taskId = getGUIDFromString(_id);
+    return this.tasksSevice.sendTaskToCurrentDay(taskId, data.currentDate);
   }
 
   // Обновляет новую задачу

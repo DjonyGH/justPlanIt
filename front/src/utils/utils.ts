@@ -38,7 +38,7 @@ export const isPastDate = (date: string | Date): boolean => {
 
 export const isCurrentDate = (date: string | Date): boolean => {
   const currentDate = getDateUTC(new Date())
-  return moment(date).isSameOrBefore(moment(currentDate))
+  return moment(date).isSame(moment(currentDate))
 }
 
 export const isFutureDate = (date: string | Date): boolean => {

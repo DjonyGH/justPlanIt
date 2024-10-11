@@ -87,7 +87,7 @@ export class TasksService {
   }
 
   async sendTaskToNextDay(taskId: GUID): Promise<TaskModel | null> {
-    console.log('service: completeTask');
+    console.log('service: sendTaskToNextDay');
     try {
       const currentTask = await this.tasksModel.findById(taskId);
       const nextDate = moment(currentTask.date)
@@ -103,7 +103,27 @@ export class TasksService {
         },
       );
     } catch (e: any) {
-      console.error('ERROR: service completeTask', e);
+      console.error('ERROR: service sendTaskToNextDay', e);
+      throw new HttpException(TASKS_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async sendTaskToCurrentDay(
+    taskId: GUID,
+    currentDate: string,
+  ): Promise<TaskModel | null> {
+    console.log('service: sendTaskToCurrentDay');
+    try {
+      return this.tasksModel.findByIdAndUpdate(
+        taskId,
+        { date: currentDate },
+        {
+          new: true,
+          upsert: true,
+        },
+      );
+    } catch (e: any) {
+      console.error('ERROR: service sendTaskToCurrentDay', e);
       throw new HttpException(TASKS_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
   }

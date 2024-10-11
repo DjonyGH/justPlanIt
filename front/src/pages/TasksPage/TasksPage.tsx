@@ -56,7 +56,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
             <div className={style.taskList}>
               {i
                 .sort((a, b) => a.order - b.order)
-                .map((task) => (
+                .map((task, idx, arr) => (
                   <Tasks
                     task={task}
                     form={form}
@@ -65,6 +65,8 @@ export const TasksPage: React.FC<IProps> = observer(() => {
                     setTaskId={setTaskId}
                     setMode={setMode}
                     key={task.id}
+                    isFirst={!idx}
+                    isLast={idx === arr.length - 1}
                   />
                 ))}
             </div>

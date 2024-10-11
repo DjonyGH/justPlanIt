@@ -4,9 +4,10 @@ import style from './styles.module.scss'
 
 import { FormInstance } from 'antd'
 import { EMode, INewTask, ITask } from '../../types'
-import { isPastDate } from '../../../../utils/utils'
+import { isCurrentDate, isPastDate } from '../../../../utils/utils'
 import dayjs from 'dayjs'
 import {
+  AimOutlined,
   BarsOutlined,
   CaretDownOutlined,
   CaretUpOutlined,
@@ -25,13 +26,14 @@ interface IProps {
   setIsWithoutDate: (value: boolean) => void
   setTaskId: (value: string) => void
   setMode: (value: EMode) => void
+  isFirst?: boolean
+  isLast?: boolean
 }
 
 export const Tasks: React.FC<IProps> = observer((props) => {
-  const { task, form, setIsModalOpen, setIsWithoutDate, setTaskId, setMode } = props
+  const { task, form, setIsModalOpen, setIsWithoutDate, setTaskId, setMode, isFirst, isLast } = props
 
   const { tasksStore } = useStore()
-  // const [isTooltipOpen, setIsTooltipOpen] = useState(false)
 
   const onEdit = (task: ITask) => {
     setMode(EMode.Edit)
@@ -57,7 +59,6 @@ export const Tasks: React.FC<IProps> = observer((props) => {
     if (isSucces) {
       const tasks = tasksStore.tasks.filter((i) => i.id !== id)
       tasksStore.setTasks(tasks)
-      // setIsTooltipOpen(false)
       tasksStore.setExpanded(null)
     }
   }
@@ -65,21 +66,18 @@ export const Tasks: React.FC<IProps> = observer((props) => {
   const orderDown = async (id: string) => {
     const isSuccess = await tasksStore.changeOrderTask(id, -1)
     isSuccess && tasksStore.fetchTasks()
-    // setIsTooltipOpen(false)
   }
   const orderUp = async (id: string) => {
     const isSuccess = await tasksStore.changeOrderTask(id, 1)
     isSuccess && tasksStore.fetchTasks()
-    // setIsTooltipOpen(false)
   }
-  const toNextDay = async (id: string) => {
-    const isSuccess = await tasksStore.sendToNextDay(id)
+  const toCurrentDay = async (id: string) => {
+    const isSuccess = await tasksStore.sendToCurrentDay(id)
     isSuccess && tasksStore.fetchTasks()
-    // setIsTooltipOpen(false)
   }
 
   return (
-    <div className={style.task} key={task.id}>
+    <div className={`${style.task}`}>
       <div className={style.checkbox} onClick={() => onChange(task, !task.isDone)}>
         {!task.isDone && !isPastDate(task.date) && <div className={style.empty} />}
         {!task.isDone && isPastDate(task.date) && <CloseOutlined style={{ color: 'var(--red)', fontSize: '18px' }} />}
@@ -92,9 +90,19 @@ export const Tasks: React.FC<IProps> = observer((props) => {
 
       <div className={style.edit}>
         <div className={`${style.controls} ${!!tasksStore.expanded[task.id] ? style.expanded : ''}`}>
-          <CaretUpOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => orderDown(task.id)} />
-          <CaretDownOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => orderUp(task.id)} />
-          <FastForwardOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => toNextDay(task.id)} />
+          <CaretUpOutlined
+            style={{ color: 'var(--gray)', fontSize: '20px' }}
+            className={`${isFirst ? style.disabled : ''}`}
+            onClick={() => !isFirst && orderDown(task.id)}
+          />
+          <CaretDownOutlined
+            style={{ color: 'var(--gray)', fontSize: '20px' }}
+            className={`${isLast ? style.disabled : ''}`}
+            onClick={() => !isLast && orderUp(task.id)}
+          />
+          {(!isCurrentDate(task.date) || !task.date) && (
+            <AimOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => toCurrentDay(task.id)} />
+          )}
           <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(task)} />
           <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => removeTask(task.id)} />
         </div>

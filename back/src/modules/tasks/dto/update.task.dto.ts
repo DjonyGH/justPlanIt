@@ -13,3 +13,7 @@ export class CompleteTaskDto {
 export class ChangeOrderTaskDto {
   changeOrder: 1 | -1;
 }
+
+export class CurrentDateDto {
+  currentDate: string;
+}

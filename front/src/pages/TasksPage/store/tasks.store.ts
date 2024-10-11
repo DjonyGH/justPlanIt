@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
 import { INewTask, ITask, TExpanded } from '../types'
 import http from '../../../services/http.service'
-import { isCurrentDate, isFutureDate } from '../../../utils/utils'
+import { getDateUTC, isCurrentDate, isFutureDate, isPastDate } from '../../../utils/utils'
 
 export interface ITasksStore {
   tasks: ITask[]
@@ -16,6 +16,7 @@ export interface ITasksStore {
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   sendToNextDay: (taskId: string) => Promise<boolean | undefined>
+  sendToCurrentDay: (taskId: string) => Promise<boolean | undefined>
   createTask: (newTask: INewTask) => Promise<ITask | undefined>
   updateTask: (taskId: string, newTask: INewTask) => Promise<ITask | undefined>
   removeTask: (taskId: string) => Promise<boolean | undefined>
@@ -40,13 +41,13 @@ export default class TasksStore implements ITasksStore {
 
   async fetchTasks() {
     try {
-      this.rootStore.loaderStore.setIsLoading(true)
+      // this.rootStore.loaderStore.setIsLoading(true)
       let tasks: ITask[] = await http.get<ITask[]>(`/tasks`)
       this.setTasks(tasks.map((i) => ({ ...i, id: i._id })))
     } catch (e: unknown) {
       console.warn(e)
     } finally {
-      this.rootStore.loaderStore.setIsLoading(false)
+      // this.rootStore.loaderStore.setIsLoading(false)
     }
   }
 
@@ -77,6 +78,20 @@ export default class TasksStore implements ITasksStore {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
       await http.put<ITask>(`/tasks/${taskId}/next-day`, {})
+      return true
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
+  async sendToCurrentDay(taskId: string) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.put<ITask>(`/tasks/${taskId}/current-day`, {
+        currentDate: getDateUTC(new Date()),
+      })
       return true
     } catch (e: unknown) {
       console.warn(e)
@@ -131,7 +146,7 @@ export default class TasksStore implements ITasksStore {
 
   get currentTasks() {
     const tasks: Record<string, ITask[]> = this.tasks
-      .filter((i) => !!i.date && isCurrentDate(i.date))
+      .filter((i) => !!i.date && (isCurrentDate(i.date) || isPastDate(i.date)))
       .reduce((acc, i) => {
         if (!(i.date in acc)) {
           acc[i.date] = []
