@@ -90,6 +90,7 @@ export const Tasks: React.FC<IProps> = observer((props) => {
         <div className={style.edit}>
           <Tooltip
             placement='bottomLeft'
+            trigger='click'
             fresh
             mouseLeaveDelay={0}
             open={isTooltipOpen}
@@ -112,7 +113,7 @@ export const Tasks: React.FC<IProps> = observer((props) => {
               </div>
             }
           >
-            <BarsOutlined style={{ fontSize: '16px' }} onClick={() => setIsTooltipOpen(true)} />
+            <BarsOutlined style={{ fontSize: '16px' }} onClick={() => setIsTooltipOpen((prev) => !prev)} />
           </Tooltip>
         </div>
       )}
