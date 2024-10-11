@@ -17,3 +17,5 @@ export enum EMode {
   Edit,
   Create,
 }
+
+export type TExpanded = Record<string, boolean>

@@ -6,6 +6,7 @@ import { Button } from '../../../../components/Button/Button'
 import { PlusOutlined } from '@ant-design/icons'
 import { FormInstance } from 'antd/lib'
 import { ETab } from '../../TasksPage'
+import { useStore } from '../../../..'
 
 interface IProps {
   tab: ETab
@@ -19,11 +20,19 @@ interface IProps {
 export const Menu: React.FC<IProps> = observer((props) => {
   const { tab, form, setIsModalOpen, setTaskId, setMode, setTab } = props
 
+  const { tasksStore } = useStore()
+
   const onCreate = () => {
+    tasksStore.setExpanded(null)
     setMode(EMode.Create)
     setIsModalOpen(true)
     form.resetFields()
     setTaskId(undefined)
+  }
+
+  const onTabClick = (value: ETab) => {
+    tasksStore.setExpanded(null)
+    setTab(value)
   }
 
   return (
@@ -33,19 +42,19 @@ export const Menu: React.FC<IProps> = observer((props) => {
           text='Текущие'
           size='min'
           type={tab === ETab.Current ? 'primary' : 'default'}
-          onClick={() => setTab(ETab.Current)}
+          onClick={() => onTabClick(ETab.Current)}
         />
         <Button
           text='Будущие'
           size='min'
           type={tab === ETab.Future ? 'primary' : 'default'}
-          onClick={() => setTab(ETab.Future)}
+          onClick={() => onTabClick(ETab.Future)}
         />
         <Button
           text='Без даты'
           size='min'
           type={tab === ETab.WithoutDate ? 'primary' : 'default'}
-          onClick={() => setTab(ETab.WithoutDate)}
+          onClick={() => onTabClick(ETab.WithoutDate)}
         />
       </div>
       <Button text={() => <PlusOutlined />} type='primary' size='square' onClick={onCreate} />

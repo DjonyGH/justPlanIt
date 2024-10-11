@@ -20,14 +20,27 @@
   align-items: center;
   width: 20px;
   height: 20px;
+  position: relative;
 }
 
 .controls {
+  position: absolute;
+  top: -5px;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 140px;
+  width: 0;
   height: 30px;
+  background-color: var(--bg);
+  border-radius: 5px;
+  overflow: hidden;
+  box-sizing: content-box;
+  transition: width 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+.expanded {
+  padding: 0 10px;
+  width: 140px;
 }
 
 .checkbox {

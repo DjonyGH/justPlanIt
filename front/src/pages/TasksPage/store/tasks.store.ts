@@ -1,15 +1,17 @@
 import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
-import { INewTask, ITask } from '../types'
+import { INewTask, ITask, TExpanded } from '../types'
 import http from '../../../services/http.service'
 import { isCurrentDate, isFutureDate } from '../../../utils/utils'
 
 export interface ITasksStore {
   tasks: ITask[]
+  expanded: TExpanded
   currentTasks: ITask[][]
   futureTasks: ITask[][]
   tasksWithoutDate: ITask[]
   setTasks: (data: ITask[]) => void
+  setExpanded: (value: string | null) => void
   fetchTasks: () => Promise<void>
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
@@ -21,6 +23,7 @@ export interface ITasksStore {
 
 export default class TasksStore implements ITasksStore {
   tasks: ITask[] = []
+  expanded: TExpanded = {}
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this)
@@ -28,6 +31,11 @@ export default class TasksStore implements ITasksStore {
 
   setTasks(data: ITask[]) {
     this.tasks = data
+  }
+
+  setExpanded(value: string | null) {
+    if (!value) this.expanded = {}
+    else this.expanded = { [value]: true }
   }
 
   async fetchTasks() {
