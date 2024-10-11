@@ -30,6 +30,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
+
     newTask.date = isWithoutDate || !newTask.date ? undefined : getDateUTC(newTask.date)
 
     let isSuccess
@@ -73,7 +74,11 @@ export const Modal: React.FC<IProps> = observer((props) => {
               </Form.Item>
 
               <ConfigProvider locale={ru_RU}>
-                <Form.Item<INewTask> name='date' initialValue={dayjs()}>
+                <Form.Item<INewTask>
+                  name='date'
+                  initialValue={dayjs()}
+                  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+                >
                   <DatePicker
                     placeholder='Дата'
                     format={'DD.MM.YYYY'}
@@ -85,10 +90,14 @@ export const Modal: React.FC<IProps> = observer((props) => {
                 </Form.Item>
               </ConfigProvider>
 
-              <Form.Item>
+              <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
                 <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
                   Без даты
                 </Checkbox>
+              </Form.Item>
+
+              <Form.Item<INewTask> name='isImportant' valuePropName='checked'>
+                <Checkbox>Важное</Checkbox>
               </Form.Item>
             </Form>
           </div>

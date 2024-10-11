@@ -3,6 +3,10 @@ import { IsString, IsBoolean } from 'class-validator';
 export class UpdateTaskDto {
   @IsString()
   name?: string;
+
+  date?: string;
+
+  isImportant?: boolean;
 }
 
 export class CompleteTaskDto {

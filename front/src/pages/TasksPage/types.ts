@@ -6,11 +6,13 @@ export interface ITask extends IBaseItem {
   date: string
   userId: string
   order: number
+  isImportant?: boolean
 }
 
 export interface INewTask {
   title: string
   date?: string
+  isImportant: boolean
 }
 
 export enum EMode {

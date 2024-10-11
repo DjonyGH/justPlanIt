@@ -7,7 +7,6 @@ import { EMode, INewTask, ITask } from '../../types'
 import { isCurrentDate, isPastDate } from '../../../../utils/utils'
 import dayjs from 'dayjs'
 import {
-  AimOutlined,
   BarsOutlined,
   CaretDownOutlined,
   CaretUpOutlined,
@@ -15,7 +14,9 @@ import {
   CloseOutlined,
   DeleteOutlined,
   EditOutlined,
+  ExclamationCircleOutlined,
   FastForwardOutlined,
+  PullRequestOutlined,
 } from '@ant-design/icons'
 import { useStore } from '../../../..'
 
@@ -75,6 +76,10 @@ export const Tasks: React.FC<IProps> = observer((props) => {
     const isSuccess = await tasksStore.sendToCurrentDay(id)
     isSuccess && tasksStore.fetchTasks()
   }
+  const toNextDay = async (id: string) => {
+    const isSuccess = await tasksStore.sendToNextDay(id)
+    isSuccess && tasksStore.fetchTasks()
+  }
 
   return (
     <div className={`${style.task}`}>
@@ -85,6 +90,9 @@ export const Tasks: React.FC<IProps> = observer((props) => {
       </div>
 
       <div className={style.title} onClick={() => tasksStore.setExpanded(null)}>
+        {!!task.isImportant && (
+          <ExclamationCircleOutlined style={{ color: 'var(--red)', fontSize: '14px', marginRight: '5px' }} />
+        )}{' '}
         {task.title}
       </div>
 
@@ -101,7 +109,16 @@ export const Tasks: React.FC<IProps> = observer((props) => {
             onClick={() => !isLast && orderUp(task.id)}
           />
           {(!isCurrentDate(task.date) || !task.date) && (
-            <AimOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => toCurrentDay(task.id)} />
+            <PullRequestOutlined
+              style={{ color: 'var(--gray)', fontSize: '20px' }}
+              onClick={() => toCurrentDay(task.id)}
+            />
+          )}
+          {(isCurrentDate(task.date) || !task.date) && (
+            <FastForwardOutlined
+              style={{ color: 'var(--gray)', fontSize: '20px' }}
+              onClick={() => toNextDay(task.id)}
+            />
           )}
           <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(task)} />
           <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => removeTask(task.id)} />

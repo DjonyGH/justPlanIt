@@ -5,4 +5,6 @@ export class CreateTaskDto {
   title: string;
 
   date?: string;
+
+  isImportant?: boolean;
 }

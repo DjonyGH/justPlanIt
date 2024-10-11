@@ -20,4 +20,7 @@ export class TaskModel extends TimeStamps {
 
   @prop({ required: true })
   userId: GUID;
+
+  @prop()
+  isImportant?: boolean;
 }
