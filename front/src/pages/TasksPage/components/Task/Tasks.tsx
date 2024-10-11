@@ -41,6 +41,7 @@ export const Tasks: React.FC<IProps> = observer((props) => {
     setIsModalOpen(true)
     form.setFieldValue('title', task.title)
     form.setFieldValue('date', dayjs(task.date))
+    form.setFieldValue('isImportant', task.isImportant)
     setIsWithoutDate(!task.date)
     setTaskId(task.id)
   }

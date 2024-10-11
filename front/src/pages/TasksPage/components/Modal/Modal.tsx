@@ -47,6 +47,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
       // tasksStore.setTasks(tasks)
       form.resetFields()
       setIsModalOpen(false)
+      tasksStore.setExpanded(null)
     }
   }
 
