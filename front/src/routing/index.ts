@@ -10,7 +10,7 @@ export interface IRouteValue {
   getLink?: (gameId: string) => string
 }
 
-type TRouteKey = 'tasks' | 'tasksWithoutDate' | 'monthGoals' | 'yearGoals' | 'faq'
+type TRouteKey = 'tasks' | 'goals' | 'faq'
 
 export type TRouteValue = Record<TRouteKey, IRouteValue>
 
@@ -20,18 +20,8 @@ export const routes: TRouteValue = {
     component: TasksPage,
     exact: true,
   },
-  tasksWithoutDate: {
-    path: '/tasksWithoutDate',
-    component: NotFound,
-    exact: true,
-  },
-  monthGoals: {
-    path: '/monthGoals',
-    component: NotFound,
-    exact: true,
-  },
-  yearGoals: {
-    path: '/yearGoals',
+  goals: {
+    path: '/goals',
     component: NotFound,
     exact: true,
   },

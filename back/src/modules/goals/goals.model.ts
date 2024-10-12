@@ -2,25 +2,19 @@ import { index, prop } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 import { GUID } from 'src/types';
 
-export interface TaskModel extends Base {}
+export interface GoalModel extends Base {}
 
 @index({ userId: 1 })
-export class TaskModel extends TimeStamps {
+export class GoalModel extends TimeStamps {
   @prop({ required: true })
   title: string;
 
   @prop({ required: true })
   isDone: boolean;
 
-  @prop()
-  date?: string;
-
   @prop({ required: true })
-  order: number;
+  date: string;
 
   @prop({ required: true })
   userId: GUID;
-
-  @prop()
-  isImportant?: boolean;
 }
