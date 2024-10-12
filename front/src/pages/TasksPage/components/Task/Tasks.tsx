@@ -100,24 +100,24 @@ export const Tasks: React.FC<IProps> = observer((props) => {
       <div className={style.edit}>
         <div className={`${style.controls} ${!!tasksStore.expanded[task.id] ? style.expanded : ''}`}>
           <CaretUpOutlined
-            style={{ color: 'var(--gray)', fontSize: '20px' }}
+            style={{ color: 'var(--gray)', fontSize: '22px' }}
             className={`${isFirst ? style.disabled : ''}`}
             onClick={() => !isFirst && orderDown(task.id)}
           />
           <CaretDownOutlined
-            style={{ color: 'var(--gray)', fontSize: '20px' }}
+            style={{ color: 'var(--gray)', fontSize: '22px' }}
             className={`${isLast ? style.disabled : ''}`}
             onClick={() => !isLast && orderUp(task.id)}
           />
           {(!isCurrentDate(task.date) || !task.date) && (
             <PullRequestOutlined
-              style={{ color: 'var(--gray)', fontSize: '20px' }}
+              style={{ color: 'var(--gray)', fontSize: '22px' }}
               onClick={() => toCurrentDay(task.id)}
             />
           )}
           {(isCurrentDate(task.date) || !task.date) && (
             <FastForwardOutlined
-              style={{ color: 'var(--gray)', fontSize: '20px' }}
+              style={{ color: 'var(--gray)', fontSize: '22px' }}
               onClick={() => toNextDay(task.id)}
             />
           )}
@@ -125,7 +125,13 @@ export const Tasks: React.FC<IProps> = observer((props) => {
           <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => removeTask(task.id)} />
         </div>
 
-        <BarsOutlined style={{ fontSize: '16px' }} onClick={() => tasksStore.setExpanded(task.id)} />
+        <BarsOutlined
+          style={{ fontSize: '18px' }}
+          onClick={(e) => {
+            tasksStore.setExpanded(task.id)
+            e.stopPropagation()
+          }}
+        />
       </div>
     </div>
   )

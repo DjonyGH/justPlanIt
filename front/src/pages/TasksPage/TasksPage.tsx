@@ -38,7 +38,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   }
 
   return (
-    <div className={style.mainPage}>
+    <div className={style.mainPage} onClick={(e) => tasksStore.setExpanded(null)}>
       <Menu
         tab={tab}
         form={form}
