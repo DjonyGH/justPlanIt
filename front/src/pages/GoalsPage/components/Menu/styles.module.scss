@@ -1,0 +1,10 @@
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  & > .leftSide {
+    display: flex;
+    gap: 5px;
+  }
+}

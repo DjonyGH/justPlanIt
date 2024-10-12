@@ -6,3 +6,13 @@ export interface IGoal extends IBaseItem {
   date: string
   userId: string
 }
+
+export interface INewGoal {
+  title: string
+  date: string
+}
+
+export enum EMode {
+  Edit,
+  Create,
+}
