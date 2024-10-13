@@ -5,6 +5,7 @@ import { useStore } from '../..'
 import { Form } from 'antd'
 import { EMode, INewGoal } from './types'
 import { Menu } from './components/Menu/Menu'
+import { Modal } from './components/Modal/Modal'
 
 interface IProps {}
 
@@ -22,6 +23,8 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   return (
     <div className={style.goalsPage}>
       <Menu form={form} setIsModalOpen={setIsModalOpen} setMode={setMode} setGoalId={setGoalId} />
+
+      <Modal mode={mode} form={form} goalId={goalId} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   )
 })
