@@ -1,28 +1,29 @@
 import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
-import { IGoal } from '../types'
+import { IGoal, INewGoal, TExpanded } from '../types'
 import http from '../../../services/http.service'
 
 export interface IGoalsStore {
   goals: IGoal[]
-  // expanded: TExpanded
+  expanded: TExpanded
   // currentTasks: ITask[][]
   // futureTasks: ITask[][]
   // tasksWithoutDate: ITask[]
   setGoals: (data: IGoal[]) => void
-  // setExpanded: (value: string | null) => void
+  setExpanded: (value: string | null) => void
   fetchGoals: () => Promise<void>
   // completeTasks: (taskId: string, isDone: boolean) => Promise<void>
   // changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   // sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   // sendToCurrentDay: (taskId: string) => Promise<boolean | undefined>
-  // createTask: (newTask: INewTask) => Promise<ITask | undefined>
-  // updateTask: (taskId: string, newTask: INewTask) => Promise<ITask | undefined>
+  createGoal: (newGoal: INewGoal) => Promise<IGoal | undefined>
+  updateGoal: (goalId: string, newGoal: INewGoal) => Promise<IGoal | undefined>
   // removeTask: (taskId: string) => Promise<boolean | undefined>
 }
 
 export default class GoalsStore implements IGoalsStore {
   goals: IGoal[] = []
+  expanded: TExpanded = {}
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this)
@@ -32,10 +33,10 @@ export default class GoalsStore implements IGoalsStore {
     this.goals = data
   }
 
-  // setExpanded(value: string | null) {
-  //   if (!value) this.expanded = {}
-  //   else this.expanded = { [value]: true }
-  // }
+  setExpanded(value: string | null) {
+    if (!value) this.expanded = {}
+    else this.expanded = { [value]: true }
+  }
 
   async fetchGoals() {
     try {
@@ -49,86 +50,37 @@ export default class GoalsStore implements IGoalsStore {
     }
   }
 
-  // async completeTasks(taskId: string, isDone: boolean) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     await http.put<ITask>(`/tasks/${taskId}/complete`, { isDone })
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
+  async createGoal(newGoal: INewGoal) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      console.log('newGoal', newGoal)
+      let createdGoal: IGoal = await http.post<IGoal>(`/goals`, newGoal)
+      console.log('newTask', createdGoal)
+      return {
+        ...createdGoal,
+        id: createdGoal._id,
+      }
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
 
-  // async changeOrderTask(taskId: string, changeOrder: 1 | -1) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     await http.put<ITask>(`/tasks/${taskId}/order`, { changeOrder })
-  //     return true
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
-
-  // async sendToNextDay(taskId: string) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     await http.put<ITask>(`/tasks/${taskId}/next-day`, {})
-  //     return true
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
-
-  // async sendToCurrentDay(taskId: string) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     await http.put<ITask>(`/tasks/${taskId}/current-day`, {
-  //       currentDate: getDateUTC(new Date()),
-  //     })
-  //     return true
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
-
-  // async createTask(newTask: INewTask) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     console.log('newTask', newTask)
-  //     let createdTask: ITask = await http.post<ITask>(`/tasks`, newTask)
-  //     console.log('newTask', createdTask)
-  //     return {
-  //       ...createdTask,
-  //       id: createdTask._id,
-  //     }
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
-
-  // async updateTask(taskId: string, newTask: INewTask) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     let updatedTask: ITask = await http.put<ITask>(`/tasks/${taskId}`, newTask)
-  //     return {
-  //       ...updatedTask,
-  //       id: updatedTask._id,
-  //     }
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
+  async updateGoal(goalId: string, newGoal: INewGoal) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      let updatedGoal: IGoal = await http.put<IGoal>(`/goals/${goalId}`, newGoal)
+      return {
+        ...updatedGoal,
+        id: updatedGoal._id,
+      }
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
 
   // async removeTask(id: string) {
   //   try {
