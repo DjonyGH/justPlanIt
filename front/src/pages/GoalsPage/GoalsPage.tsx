@@ -9,7 +9,7 @@ import { Modal } from './components/Modal/Modal'
 
 interface IProps {}
 
-export const TasksPage: React.FC<IProps> = observer(() => {
+export const GoalsPage: React.FC<IProps> = observer(() => {
   const { userStore } = useStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [mode, setMode] = useState<EMode>(EMode.Create)

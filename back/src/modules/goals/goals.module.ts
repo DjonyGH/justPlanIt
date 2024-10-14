@@ -13,7 +13,7 @@ import { GoalsService } from './goals.service';
       {
         typegooseClass: GoalModel,
         schemaOptions: {
-          collection: 'Goals',
+          collection: 'goals',
         },
       },
     ]),

@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { getMongoConfig } from './configs/mongo.config';
 import { UserModule } from './modules/users/user.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { GoalsModule } from './modules/goals/goals.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     ScheduleModule.forRoot(),
     UserModule,
     TasksModule,
+    GoalsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

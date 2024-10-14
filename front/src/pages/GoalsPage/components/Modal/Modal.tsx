@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../../../..'
-import { Form, DatePicker, ConfigProvider, FormInstance } from 'antd'
+import { Form, ConfigProvider, FormInstance, Select } from 'antd'
 import { EMode, INewGoal } from '../../types'
 import { getDateUTC } from '../../../../utils/utils'
 import { Button } from '../../../../components/Button/Button'
@@ -12,6 +12,11 @@ import TextArea from 'antd/es/input/TextArea'
 import ru_RU from 'antd/lib/locale/ru_RU'
 
 dayjs.locale('ru')
+
+interface IOption {
+  value: string
+  label: string
+}
 
 interface IProps {
   goalId: string | undefined
@@ -47,6 +52,69 @@ export const Modal: React.FC<IProps> = observer((props) => {
     }
   }
 
+  const getYearOptions = (): IOption[] => {
+    const currentYaer = new Date().getFullYear()
+    return Array(10)
+      .fill(0)
+      .map((_, i) => ({
+        value: `${i + currentYaer}`,
+        label: `${i + currentYaer}`,
+      }))
+  }
+
+  const getMonthOptions = (): IOption[] => {
+    return [
+      {
+        value: '01',
+        label: 'Январь',
+      },
+      {
+        value: '02',
+        label: 'Февраль',
+      },
+      {
+        value: '03',
+        label: 'Март',
+      },
+      {
+        value: '04',
+        label: 'Апрель',
+      },
+      {
+        value: '05',
+        label: 'Май',
+      },
+      {
+        value: '06',
+        label: 'Июнь',
+      },
+      {
+        value: '07',
+        label: 'Июль',
+      },
+      {
+        value: '08',
+        label: 'Август',
+      },
+      {
+        value: '09',
+        label: 'Сентябрь',
+      },
+      {
+        value: '10',
+        label: 'Октябрь',
+      },
+      {
+        value: '11',
+        label: 'Ноябрь',
+      },
+      {
+        value: '12',
+        label: 'Декабрь',
+      },
+    ]
+  }
+
   return (
     <>
       {isModalOpen && (
@@ -67,22 +135,24 @@ export const Modal: React.FC<IProps> = observer((props) => {
               onFinish={onSubmit}
             >
               <Form.Item<INewGoal> name='title' rules={[{ required: true, message: 'Обязательное поле' }]}>
-                <TextArea autoSize={{ minRows: 3, maxRows: 3 }} placeholder='Описание задачи' />
+                <TextArea autoSize={{ minRows: 3, maxRows: 3 }} placeholder='Описание цели' />
               </Form.Item>
 
               <ConfigProvider locale={ru_RU}>
-                <Form.Item<INewGoal>
-                  name='date'
-                  initialValue={dayjs()}
-                  style={{ display: 'inline-block', width: '30%' }}
+                <Form.Item name='year' initialValue={new Date().getFullYear()}>
+                  <Select style={{ width: 120 }} options={getYearOptions()} />
+                </Form.Item>
+              </ConfigProvider>
+
+              <ConfigProvider locale={ru_RU}>
+                <Form.Item
+                  name='month'
+                  initialValue={{
+                    value: new Date().getMonth() + 1 < 10 ? `0${new Date().getMonth() + 1}` : new Date().getMonth() + 1,
+                    label: 'Октябрь',
+                  }}
                 >
-                  <DatePicker
-                    placeholder='Дата'
-                    format={'DD.MM.YYYY'}
-                    minDate={dayjs()}
-                    allowClear={false}
-                    inputReadOnly
-                  />
+                  <Select style={{ width: 120 }} options={getMonthOptions()} />
                 </Form.Item>
               </ConfigProvider>
             </Form>
