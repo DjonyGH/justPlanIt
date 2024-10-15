@@ -12,9 +12,21 @@ export interface INewGoal {
   date: string
 }
 
+export interface IGoalForm {
+  title: string
+  year: string
+  month: IOption
+  day: IOption
+}
+
 export enum EMode {
   Edit,
   Create,
 }
 
 export type TExpanded = Record<string, boolean>
+
+export interface IOption {
+  value: string
+  label: string
+}

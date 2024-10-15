@@ -1,14 +1,14 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
-import { EMode, INewGoal } from '../../types'
+import { EMode, IGoalForm } from '../../types'
 import { Button } from '../../../../components/Button/Button'
 import { PlusOutlined } from '@ant-design/icons'
 import { FormInstance } from 'antd/lib'
 import { useStore } from '../../../..'
 
 interface IProps {
-  form: FormInstance<INewGoal>
+  form: FormInstance<IGoalForm>
   setIsModalOpen: (value: boolean) => void
   setGoalId: (value: string | undefined) => void
   setMode: (value: EMode) => void

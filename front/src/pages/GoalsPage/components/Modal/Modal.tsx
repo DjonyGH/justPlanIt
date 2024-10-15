@@ -1,27 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../../../..'
-import { Form, ConfigProvider, FormInstance, Select } from 'antd'
-import { EMode, INewGoal } from '../../types'
-import { getDateUTC } from '../../../../utils/utils'
+import { Form, FormInstance, Select } from 'antd'
+import { EMode, IGoalForm, INewGoal, IOption } from '../../types'
 import { Button } from '../../../../components/Button/Button'
 import dayjs from 'dayjs'
 import { CloseOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
-import ru_RU from 'antd/lib/locale/ru_RU'
 
 dayjs.locale('ru')
-
-interface IOption {
-  value: string
-  label: string
-}
 
 interface IProps {
   goalId: string | undefined
   mode: EMode
-  form: FormInstance<INewGoal>
+  form: FormInstance<IGoalForm>
   isModalOpen: boolean
   setIsModalOpen: (value: boolean) => void
 }
@@ -31,25 +24,39 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
   const { goalsStore } = useStore()
 
+  const [daysInMonth, setDaysInMonth] = useState<number | undefined>(31)
+
+  useEffect(() => {
+    const currentYaer = new Date().getFullYear()
+    const currentMonth = new Date().getMonth() + 1
+    const daysInMonth = getDaysInMonth(currentMonth, currentYaer)
+    setDaysInMonth(daysInMonth)
+  }, [])
+
   const onSubmit = async () => {
-    const newGoal: INewGoal = form.getFieldsValue()
+    const goalForm: IGoalForm = form.getFieldsValue()
 
-    newGoal.date = getDateUTC(newGoal.date)
-
-    let isSuccess
-    if (mode === EMode.Create) {
-      isSuccess = await goalsStore.createGoal(newGoal)
-    }
-    if (mode === EMode.Edit && goalId) {
-      isSuccess = await goalsStore.updateGoal(goalId, newGoal)
+    const newGoal: INewGoal = {
+      title: goalForm.title,
+      date: `${goalForm.year}-${goalForm.month?.value || '12'}-${goalForm.day?.value || '31'}`,
     }
 
-    if (isSuccess) {
-      goalsStore.fetchGoals()
-      form.resetFields()
-      setIsModalOpen(false)
-      goalsStore.setExpanded(null)
-    }
+    console.log('newGoal', newGoal)
+
+    // let isSuccess
+    // if (mode === EMode.Create) {
+    //   isSuccess = await goalsStore.createGoal(newGoal)
+    // }
+    // if (mode === EMode.Edit && goalId) {
+    //   isSuccess = await goalsStore.updateGoal(goalId, newGoal)
+    // }
+
+    // if (isSuccess) {
+    //   goalsStore.fetchGoals()
+    //   form.resetFields()
+    //   setIsModalOpen(false)
+    //   goalsStore.setExpanded(null)
+    // }
   }
 
   const getYearOptions = (): IOption[] => {
@@ -115,6 +122,18 @@ export const Modal: React.FC<IProps> = observer((props) => {
     ]
   }
 
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month, 0).getDate()
+  }
+
+  const getDaysOptions = () =>
+    Array(daysInMonth)
+      .fill(1)
+      .map((_, i) => ({
+        value: i + 1,
+        label: i + 1,
+      }))
+
   return (
     <>
       {isModalOpen && (
@@ -138,23 +157,40 @@ export const Modal: React.FC<IProps> = observer((props) => {
                 <TextArea autoSize={{ minRows: 3, maxRows: 3 }} placeholder='Описание цели' />
               </Form.Item>
 
-              <ConfigProvider locale={ru_RU}>
-                <Form.Item name='year' initialValue={new Date().getFullYear()}>
-                  <Select style={{ width: 120 }} options={getYearOptions()} />
-                </Form.Item>
-              </ConfigProvider>
+              <Form.Item
+                name='year'
+                initialValue={new Date().getFullYear()}
+                style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
+              >
+                <Select options={getYearOptions()} />
+              </Form.Item>
 
-              <ConfigProvider locale={ru_RU}>
-                <Form.Item
-                  name='month'
-                  initialValue={{
-                    value: new Date().getMonth() + 1 < 10 ? `0${new Date().getMonth() + 1}` : new Date().getMonth() + 1,
-                    label: 'Октябрь',
+              <Form.Item
+                name='month'
+                initialValue={getMonthOptions().find((i) => +i.value === new Date().getMonth() + 1)}
+                style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
+              >
+                <Select
+                  options={getMonthOptions()}
+                  onChange={(e) => {
+                    if (!e) {
+                      setDaysInMonth(undefined)
+                    } else {
+                      const daysInMonth = getDaysInMonth(+e, form.getFieldValue('year'))
+                      setDaysInMonth(daysInMonth)
+                    }
                   }}
-                >
-                  <Select style={{ width: 120 }} options={getMonthOptions()} />
-                </Form.Item>
-              </ConfigProvider>
+                  allowClear
+                />
+              </Form.Item>
+
+              <Form.Item
+                name='day'
+                initialValue={getDaysOptions().slice(-1)[0]}
+                style={{ width: 'calc(33% - 10px)', display: 'inline-block' }}
+              >
+                <Select options={getDaysOptions()} allowClear />
+              </Form.Item>
             </Form>
           </div>
           <div className={style.footer}>

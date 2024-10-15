@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../..'
 import { Form } from 'antd'
-import { EMode, INewGoal } from './types'
+import { EMode, IGoalForm } from './types'
 import { Menu } from './components/Menu/Menu'
 import { Modal } from './components/Modal/Modal'
 
@@ -14,7 +14,7 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [mode, setMode] = useState<EMode>(EMode.Create)
   const [goalId, setGoalId] = useState<string | undefined>()
-  const [form] = Form.useForm<INewGoal>()
+  const [form] = Form.useForm<IGoalForm>()
 
   useEffect(() => {
     if (!userStore.user?.id) return
