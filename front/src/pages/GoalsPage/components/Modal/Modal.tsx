@@ -24,7 +24,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
   const { goalsStore } = useStore()
 
-  const [daysInMonth, setDaysInMonth] = useState<number | undefined>(31)
+  const [daysInMonth, setDaysInMonth] = useState<number | undefined>(undefined)
 
   useEffect(() => {
     const currentYaer = new Date().getFullYear()
@@ -36,27 +36,35 @@ export const Modal: React.FC<IProps> = observer((props) => {
   const onSubmit = async () => {
     const goalForm: IGoalForm = form.getFieldsValue()
 
-    const newGoal: INewGoal = {
-      title: goalForm.title,
-      date: `${goalForm.year}-${goalForm.month?.value || '12'}-${goalForm.day?.value || '31'}`,
+    let date = `${goalForm.year}`
+
+    if (goalForm.month?.value) {
+      date = date + `-${goalForm.month?.value}`
     }
 
-    console.log('newGoal', newGoal)
+    if (goalForm.day?.value) {
+      date = date + `-${goalForm.day?.value}`
+    }
 
-    // let isSuccess
-    // if (mode === EMode.Create) {
-    //   isSuccess = await goalsStore.createGoal(newGoal)
-    // }
-    // if (mode === EMode.Edit && goalId) {
-    //   isSuccess = await goalsStore.updateGoal(goalId, newGoal)
-    // }
+    const newGoal: INewGoal = {
+      title: goalForm.title,
+      date,
+    }
 
-    // if (isSuccess) {
-    //   goalsStore.fetchGoals()
-    //   form.resetFields()
-    //   setIsModalOpen(false)
-    //   goalsStore.setExpanded(null)
-    // }
+    let isSuccess
+    if (mode === EMode.Create) {
+      isSuccess = await goalsStore.createGoal(newGoal)
+    }
+    if (mode === EMode.Edit && goalId) {
+      isSuccess = await goalsStore.updateGoal(goalId, newGoal)
+    }
+
+    if (isSuccess) {
+      goalsStore.fetchGoals()
+      form.resetFields()
+      setIsModalOpen(false)
+      goalsStore.setExpanded(null)
+    }
   }
 
   const getYearOptions = (): IOption[] => {
@@ -127,12 +135,14 @@ export const Modal: React.FC<IProps> = observer((props) => {
   }
 
   const getDaysOptions = () =>
-    Array(daysInMonth)
-      .fill(1)
-      .map((_, i) => ({
-        value: i + 1,
-        label: i + 1,
-      }))
+    daysInMonth
+      ? Array(daysInMonth)
+          .fill(1)
+          .map((_, i) => ({
+            value: i + 1,
+            label: i + 1,
+          }))
+      : []
 
   return (
     <>
@@ -162,7 +172,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
                 initialValue={new Date().getFullYear()}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
               >
-                <Select options={getYearOptions()} />
+                <Select options={getYearOptions()} suffixIcon={null} />
               </Form.Item>
 
               <Form.Item
@@ -175,12 +185,18 @@ export const Modal: React.FC<IProps> = observer((props) => {
                   onChange={(e) => {
                     if (!e) {
                       setDaysInMonth(undefined)
+                      form.setFieldValue('day', undefined)
                     } else {
                       const daysInMonth = getDaysInMonth(+e, form.getFieldValue('year'))
                       setDaysInMonth(daysInMonth)
+                      const selectedDay = form.getFieldValue('day')
+                      if (selectedDay.value > daysInMonth) {
+                        form.setFieldValue('day', { value: 1, label: 1 })
+                      }
                     }
                   }}
                   allowClear
+                  suffixIcon={<CloseOutlined />}
                 />
               </Form.Item>
 
@@ -189,7 +205,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
                 initialValue={getDaysOptions().slice(-1)[0]}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block' }}
               >
-                <Select options={getDaysOptions()} allowClear />
+                <Select options={getDaysOptions()} disabled={!daysInMonth} allowClear suffixIcon={<CloseOutlined />} />
               </Form.Item>
             </Form>
           </div>
