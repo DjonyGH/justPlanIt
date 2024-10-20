@@ -6,7 +6,7 @@ import http from '../../../services/http.service'
 export interface IGoalsStore {
   goals: IGoal[]
   expanded: TExpanded
-  // currentTasks: ITask[][]
+  groupedGoals: IGoal[][]
   // futureTasks: ITask[][]
   // tasksWithoutDate: ITask[]
   setGoals: (data: IGoal[]) => void
@@ -94,21 +94,21 @@ export default class GoalsStore implements IGoalsStore {
   //   }
   // }
 
-  // get currentTasks() {
-  //   const tasks: Record<string, ITask[]> = this.tasks
-  //     .filter((i) => !!i.date && (isCurrentDate(i.date) || isPastDate(i.date)))
-  //     .reduce((acc, i) => {
-  //       if (!(i.date in acc)) {
-  //         acc[i.date] = []
-  //       }
-  //       acc[i.date].push(i)
-  //       return acc
-  //     }, {} as Record<string, ITask[]>)
+  get groupedGoals() {
+    const tasks: Record<string, IGoal[]> = this.goals
+      // .filter((i) => !!i.date && (isCurrentDate(i.date) || isPastDate(i.date)))
+      .reduce((acc, i) => {
+        if (!(i.date in acc)) {
+          acc[i.date] = []
+        }
+        acc[i.date].push(i)
+        return acc
+      }, {} as Record<string, IGoal[]>)
 
-  //   return Object.keys(tasks)
-  //     .sort((a, b) => Date.parse(b) - Date.parse(a))
-  //     .map((key) => tasks[key])
-  // }
+    return Object.keys(tasks)
+      .sort((a, b) => Date.parse(b) - Date.parse(a))
+      .map((key) => tasks[key])
+  }
 
   // get futureTasks() {
   //   const tasks: Record<string, ITask[]> = this.tasks

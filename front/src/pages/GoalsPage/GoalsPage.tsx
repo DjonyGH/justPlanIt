@@ -10,7 +10,7 @@ import { Modal } from './components/Modal/Modal'
 interface IProps {}
 
 export const GoalsPage: React.FC<IProps> = observer(() => {
-  const { userStore } = useStore()
+  const { userStore, goalsStore } = useStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [mode, setMode] = useState<EMode>(EMode.Create)
   const [goalId, setGoalId] = useState<string | undefined>()
@@ -18,7 +18,10 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
 
   useEffect(() => {
     if (!userStore.user?.id) return
+    goalsStore.fetchGoals()
   }, [userStore.user?.id]) // eslint-disable-line
+
+  console.log('groupedGoals', goalsStore.groupedGoals)
 
   return (
     <div className={style.goalsPage}>
