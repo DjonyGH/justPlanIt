@@ -119,8 +119,6 @@ export default class GoalsStore implements IGoalsStore {
         return acc
       }, {} as Record<string, IGoal[]>)
 
-    console.log('goals', goals)
-
     return Object.keys(goals)
       .sort((a, b) => {
         let dateA

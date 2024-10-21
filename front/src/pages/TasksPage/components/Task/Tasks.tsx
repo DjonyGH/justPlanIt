@@ -7,7 +7,7 @@ import { EMode, INewTask, ITask } from '../../types'
 import { isCurrentDate, isPastDate } from '../../../../utils/utils'
 import dayjs from 'dayjs'
 import {
-  BarsOutlined,
+  MoreOutlined,
   CaretDownOutlined,
   CaretUpOutlined,
   CheckOutlined,
@@ -125,8 +125,8 @@ export const Tasks: React.FC<IProps> = observer((props) => {
           <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => removeTask(task.id)} />
         </div>
 
-        <BarsOutlined
-          style={{ fontSize: '18px' }}
+        <MoreOutlined
+          style={{ fontSize: '18px', marginRight: '-5px' }}
           onClick={(e) => {
             tasksStore.setExpanded(task.id)
             e.stopPropagation()

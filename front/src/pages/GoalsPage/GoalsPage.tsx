@@ -45,25 +45,23 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
         setTab={setTab}
       />
 
-      {groupedGoals[tab]
-        // .sort((a, b) => (a[0].date > b[0].date ? 1 : -1))
-        .map((i) => (
-          <div className={style.goalListWrapper} key={i[0].date}>
-            <div className={style.date}>{getDate(i[0].date)}</div>
-            <div className={style.goalList}>
-              {i.map((goal) => (
-                <Goal
-                  goal={goal}
-                  form={form}
-                  setIsModalOpen={setIsModalOpen}
-                  setTaskId={setGoalId}
-                  setMode={setMode}
-                  key={goal.id}
-                />
-              ))}
-            </div>
+      {groupedGoals[tab].map((i) => (
+        <div className={style.goalListWrapper} key={i[0].date}>
+          <div className={style.date}>{getDate(i[0].date)}</div>
+          <div className={style.goalList}>
+            {i.map((goal) => (
+              <Goal
+                goal={goal}
+                form={form}
+                setIsModalOpen={setIsModalOpen}
+                setTaskId={setGoalId}
+                setMode={setMode}
+                key={goal.id}
+              />
+            ))}
           </div>
-        ))}
+        </div>
+      ))}
 
       <Modal mode={mode} form={form} goalId={goalId} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>

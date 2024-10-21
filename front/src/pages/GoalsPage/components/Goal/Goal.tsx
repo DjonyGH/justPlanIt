@@ -5,7 +5,14 @@ import style from './styles.module.scss'
 import { FormInstance } from 'antd'
 import { EMode, IGoal, IGoalForm } from '../../types'
 import { isPastGoal } from '../../../../utils/utils'
-import { BarsOutlined, CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import {
+  BarsOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  MoreOutlined,
+} from '@ant-design/icons'
 import { useStore } from '../../../..'
 
 interface IProps {
@@ -25,6 +32,9 @@ export const Goal: React.FC<IProps> = observer((props) => {
     setMode(EMode.Edit)
     setIsModalOpen(true)
     form.setFieldValue('title', goal.title)
+    form.setFieldValue('year', goal.date.substring(0, 4))
+    form.setFieldValue('month', goal.date.substring(5, 7))
+    form.setFieldValue('day', goal.date.substring(8, 10))
     setTaskId(goal.id)
   }
 
@@ -47,6 +57,8 @@ export const Goal: React.FC<IProps> = observer((props) => {
     }
   }
 
+  const onAddTasks = async (id: string) => {}
+
   return (
     <div className={`${style.goal}`}>
       <div className={style.checkbox} onClick={() => onComplete(goal, !goal.isDone)}>
@@ -60,13 +72,15 @@ export const Goal: React.FC<IProps> = observer((props) => {
       </div>
 
       <div className={style.edit}>
-        <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expanded : ''}`}>
+        <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expandedThreeItems : ''}`}>
+          <BarsOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onAddTasks(goal.id)} />
+
           <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(goal)} />
           <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => onRemove(goal.id)} />
         </div>
 
-        <BarsOutlined
-          style={{ fontSize: '18px' }}
+        <MoreOutlined
+          style={{ fontSize: '18px', marginRight: '-5px' }}
           onClick={(e) => {
             goalsStore.setExpanded(goal.id)
             e.stopPropagation()
