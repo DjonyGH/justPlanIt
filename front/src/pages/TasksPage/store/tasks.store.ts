@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
 import { INewTask, ITask, TExpanded } from '../types'
 import http from '../../../services/http.service'
-import { getDateUTC, isCurrentDate, isFutureDate, isPastDate } from '../../../utils/utils'
+import { getCurrentDateUTC, isCurrentDate, isFutureDate, isPastDate } from '../../../utils/utils'
 
 export interface ITasksStore {
   tasks: ITask[]
@@ -90,7 +90,7 @@ export default class TasksStore implements ITasksStore {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
       await http.put<ITask>(`/tasks/${taskId}/current-day`, {
-        currentDate: getDateUTC(new Date()),
+        currentDate: getCurrentDateUTC(),
       })
       return true
     } catch (e: unknown) {

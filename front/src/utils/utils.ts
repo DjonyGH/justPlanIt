@@ -25,6 +25,18 @@ export const getDateUTC = (value: string | Date): string => {
   return `${year}-${month}-${day}`
 }
 
+export const getCurrentDateUTC = (): string => {
+  return getDateUTC(new Date())
+}
+
+export const getCurrentYear = (): number => {
+  return new Date().getFullYear()
+}
+
+export const getCurrentMonth = (): number => {
+  return new Date().getMonth() + 1
+}
+
 export const getDateTime = (date: string | undefined, isShort?: boolean): string => {
   const format = isShort ? 'DD.MM.YY HH:mm' : 'DD.MM.YYYY HH:mm'
   return date ? moment(new Date(date)).format(format) : '--'
@@ -39,17 +51,17 @@ export const isDateBefore = (date1: string, date2: string): boolean => {
 }
 
 export const isPastDate = (date: string | Date): boolean => {
-  const currentDate = getDateUTC(new Date())
+  const currentDate = getCurrentDateUTC()
   return moment(date).isBefore(moment(currentDate))
 }
 
 export const isCurrentDate = (date: string | Date): boolean => {
-  const currentDate = getDateUTC(new Date())
+  const currentDate = getCurrentDateUTC()
   return moment(date).isSame(moment(currentDate))
 }
 
 export const isFutureDate = (date: string | Date): boolean => {
-  const currentDate = getDateUTC(new Date())
+  const currentDate = getCurrentDateUTC()
   return moment(date).isAfter(moment(currentDate))
 }
 
@@ -58,7 +70,7 @@ export const ucFirst = (str: string): string => {
 }
 
 export const isPastGoal = (date: string): boolean => {
-  const currentDate = getDateUTC(new Date())
+  const currentDate = getCurrentDateUTC()
   let preparedDate
   if (date.length <= 4) {
     preparedDate = moment(new Date(date)).add(1, 'y').add(-1, 's')

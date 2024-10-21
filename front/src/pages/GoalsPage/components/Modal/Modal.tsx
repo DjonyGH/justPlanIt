@@ -8,7 +8,7 @@ import { Button } from '../../../../components/Button/Button'
 import dayjs from 'dayjs'
 import { CloseOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
-import { addZeroBefore } from '../../../../utils/utils'
+import { addZeroBefore, getCurrentMonth, getCurrentYear } from '../../../../utils/utils'
 
 dayjs.locale('ru')
 
@@ -28,8 +28,8 @@ export const Modal: React.FC<IProps> = observer((props) => {
   const [daysInMonth, setDaysInMonth] = useState<number | undefined>(undefined)
 
   useEffect(() => {
-    const currentYaer = new Date().getFullYear()
-    const currentMonth = new Date().getMonth() + 1
+    const currentYaer = getCurrentYear()
+    const currentMonth = getCurrentMonth()
     const daysInMonth = getDaysInMonth(currentMonth, currentYaer)
     setDaysInMonth(daysInMonth)
   }, [])
@@ -69,7 +69,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
   }
 
   const getYearOptions = (): IOption[] => {
-    const currentYaer = new Date().getFullYear()
+    const currentYaer = getCurrentYear()
     return Array(10)
       .fill(0)
       .map((_, i) => ({
@@ -170,7 +170,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
               <Form.Item
                 name='year'
-                initialValue={new Date().getFullYear()}
+                initialValue={getCurrentYear()}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
               >
                 <Select options={getYearOptions()} suffixIcon={null} />
@@ -178,7 +178,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
               <Form.Item
                 name='month'
-                initialValue={`${new Date().getMonth() + 1}`}
+                initialValue={`${getCurrentMonth()}`}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
               >
                 <Select
