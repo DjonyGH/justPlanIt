@@ -29,22 +29,22 @@ export const Goal: React.FC<IProps> = observer((props) => {
   }
 
   const onComplete = async (goal: IGoal, isDone: boolean) => {
-    // await goalsStore.completeTasks(goal.id, isDone)
-    // const goals = [...goalsStore.goals]
-    // const newTask = goals.find((i) => i.id === goal.id)
-    // if (newTask) {
-    //   newTask.isDone = isDone
-    // }
-    // goalsStore.setTasks(goals)
+    await goalsStore.completeGoal(goal.id, isDone)
+    const goals = [...goalsStore.goals]
+    const newGoal = goals.find((i) => i.id === goal.id)
+    if (newGoal) {
+      newGoal.isDone = isDone
+    }
+    goalsStore.setGoals(goals)
   }
 
   const onRemove = async (id: string) => {
-    // const isSucces = await goalsStore.removeTask(id)
-    // if (isSucces) {
-    //   const goals = goalsStore.goals.filter((i) => i.id !== id)
-    //   goalsStore.setTasks(goals)
-    //   goalsStore.setExpanded(null)
-    // }
+    const isSucces = await goalsStore.removeGoal(id)
+    if (isSucces) {
+      const goals = goalsStore.goals.filter((i) => i.id !== id)
+      goalsStore.setGoals(goals)
+      goalsStore.setExpanded(null)
+    }
   }
 
   return (

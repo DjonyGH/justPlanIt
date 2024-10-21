@@ -25,6 +25,23 @@ export class GoalsService {
     }
   }
 
+  async completeGoal(goalId: GUID, isDone: boolean): Promise<GoalModel | null> {
+    console.log('service: completeGoal');
+    try {
+      return this.goalsModel.findByIdAndUpdate(
+        goalId,
+        { isDone },
+        {
+          new: true,
+          upsert: true,
+        },
+      );
+    } catch (e: any) {
+      console.error('ERROR: service completeGoal', e);
+      throw new HttpException(TASKS_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
   async createGoal(goal: CreateGoalDto, userId: GUID) {
     console.log('service: createGoal', goal);
     try {

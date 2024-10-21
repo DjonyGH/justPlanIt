@@ -15,13 +15,13 @@ export interface IGoalsStore {
   setGoals: (data: IGoal[]) => void
   setExpanded: (value: string | null) => void
   fetchGoals: () => Promise<void>
-  // completeTasks: (taskId: string, isDone: boolean) => Promise<void>
+  completeGoal: (goalId: string, isDone: boolean) => Promise<void>
   // changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   // sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   // sendToCurrentDay: (taskId: string) => Promise<boolean | undefined>
   createGoal: (newGoal: INewGoal) => Promise<IGoal | undefined>
   updateGoal: (goalId: string, newGoal: INewGoal) => Promise<IGoal | undefined>
-  // removeTask: (taskId: string) => Promise<boolean | undefined>
+  removeGoal: (goalId: string) => Promise<boolean | undefined>
 }
 
 export default class GoalsStore implements IGoalsStore {
@@ -46,6 +46,17 @@ export default class GoalsStore implements IGoalsStore {
       // this.rootStore.loaderStore.setIsLoading(true)
       let goals: IGoal[] = await http.get<IGoal[]>(`/goals`)
       this.setGoals(goals.map((i) => ({ ...i, id: i._id })))
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
+
+  async completeGoal(goalId: string, isDone: boolean) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.put<IGoal>(`/goals/${goalId}/complete`, { isDone })
     } catch (e: unknown) {
       console.warn(e)
     } finally {
@@ -85,17 +96,17 @@ export default class GoalsStore implements IGoalsStore {
     }
   }
 
-  // async removeTask(id: string) {
-  //   try {
-  //     // this.rootStore.loaderStore.setIsLoading(true)
-  //     await http.delete<ITask>(`/tasks/${id}`)
-  //     return true
-  //   } catch (e: unknown) {
-  //     console.warn(e)
-  //   } finally {
-  //     // this.rootStore.loaderStore.setIsLoading(false)
-  //   }
-  // }
+  async removeGoal(id: string) {
+    try {
+      // this.rootStore.loaderStore.setIsLoading(true)
+      await http.delete<IGoal>(`/goals/${id}`)
+      return true
+    } catch (e: unknown) {
+      console.warn(e)
+    } finally {
+      // this.rootStore.loaderStore.setIsLoading(false)
+    }
+  }
 
   get currentGoals() {
     const goals: Record<string, IGoal[]> = this.goals

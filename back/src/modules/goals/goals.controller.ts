@@ -11,6 +11,7 @@ import {
 import { GoalsService } from './goals.service';
 import { getGUIDFromString } from 'src/utils/getObjectIdFromString';
 import { CreateGoalDto } from './dto/create.goal.dto';
+import { CompleteGoalDto } from './dto/update.goal.dto';
 
 @Controller('goals')
 export class GoalsController {
@@ -22,6 +23,14 @@ export class GoalsController {
     // console.log('controller: getGoals');
     const userId = getGUIDFromString(session.userId);
     return this.goalsSevice.getAllGoalsByUserId(userId);
+  }
+
+  // Обновляет статус цели
+  @Put(':id/complete')
+  async completeGoal(@Param('id') _id: string, @Body() goal: CompleteGoalDto) {
+    console.log('controller: completeGoal');
+    const goalId = getGUIDFromString(_id);
+    return this.goalsSevice.completeGoal(goalId, goal.isDone);
   }
 
   // Обновляет цель
