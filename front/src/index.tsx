@@ -9,6 +9,7 @@ import App from './App'
 import { BrowserRouter } from 'react-router-dom'
 import { RootStore } from './stores/root.store'
 import moment from 'moment'
+import 'moment/locale/ru'
 
 moment.locale('ru')
 

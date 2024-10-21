@@ -6,16 +6,19 @@ import { Button } from '../../../../components/Button/Button'
 import { PlusOutlined } from '@ant-design/icons'
 import { FormInstance } from 'antd/lib'
 import { useStore } from '../../../..'
+import { ETab } from '../../GoalsPage'
 
 interface IProps {
   form: FormInstance<IGoalForm>
+  tab: ETab
   setIsModalOpen: (value: boolean) => void
   setGoalId: (value: string | undefined) => void
   setMode: (value: EMode) => void
+  setTab: (value: ETab) => void
 }
 
 export const Menu: React.FC<IProps> = observer((props) => {
-  const { form, setIsModalOpen, setGoalId, setMode } = props
+  const { form, tab, setIsModalOpen, setGoalId, setMode, setTab } = props
 
   const { tasksStore } = useStore()
 
@@ -27,9 +30,27 @@ export const Menu: React.FC<IProps> = observer((props) => {
     setGoalId(undefined)
   }
 
+  const onTabClick = (value: ETab) => {
+    tasksStore.setExpanded(null)
+    setTab(value)
+  }
+
   return (
     <div className={style.menu}>
-      <div className={style.leftSide}></div>
+      <div className={style.leftSide}>
+        <Button
+          text='Текущие'
+          size='min'
+          type={tab === ETab.Current ? 'primary' : 'default'}
+          onClick={() => onTabClick(ETab.Current)}
+        />
+        <Button
+          text='Прошедшие'
+          size='min'
+          type={tab === ETab.Past ? 'primary' : 'default'}
+          onClick={() => onTabClick(ETab.Past)}
+        />
+      </div>
       <Button text={() => <PlusOutlined />} type='primary' size='square' onClick={onCreate} />
     </div>
   )

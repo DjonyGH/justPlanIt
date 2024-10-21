@@ -15,8 +15,8 @@ export interface INewGoal {
 export interface IGoalForm {
   title: string
   year: string
-  month: IOption
-  day: IOption
+  month: string
+  day: string
 }
 
 export enum EMode {

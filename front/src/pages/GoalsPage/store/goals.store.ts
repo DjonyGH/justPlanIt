@@ -2,11 +2,14 @@ import { makeAutoObservable } from 'mobx'
 import { RootStore } from '../../../stores/root.store'
 import { IGoal, INewGoal, TExpanded } from '../types'
 import http from '../../../services/http.service'
+import { isPastGoal } from '../../../utils/utils'
+import moment from 'moment'
 
 export interface IGoalsStore {
   goals: IGoal[]
   expanded: TExpanded
-  groupedGoals: IGoal[][]
+  currentGoals: IGoal[][]
+  pastGoals: IGoal[][]
   // futureTasks: ITask[][]
   // tasksWithoutDate: ITask[]
   setGoals: (data: IGoal[]) => void
@@ -94,9 +97,45 @@ export default class GoalsStore implements IGoalsStore {
   //   }
   // }
 
-  get groupedGoals() {
+  get currentGoals() {
+    const goals: Record<string, IGoal[]> = this.goals
+      .filter((i) => !isPastGoal(i.date))
+      .reduce((acc, i) => {
+        if (!(i.date in acc)) {
+          acc[i.date] = []
+        }
+        acc[i.date].push(i)
+        return acc
+      }, {} as Record<string, IGoal[]>)
+
+    console.log('goals', goals)
+
+    return Object.keys(goals)
+      .sort((a, b) => {
+        let dateA
+        let dateB
+        if (a.length <= 4) {
+          dateA = moment(a).add(1, 'y').add(-1, 's')
+        } else if (a.length <= 7) {
+          dateA = moment(a).add(1, 'M').add(-1, 's')
+        } else {
+          dateA = moment(a)
+        }
+        if (b.length <= 4) {
+          dateB = moment(b).add(1, 'y').add(-1, 's')
+        } else if (b.length <= 7) {
+          dateB = moment(b).add(1, 'M').add(-1, 's')
+        } else {
+          dateB = moment(b)
+        }
+        return dateA > dateB ? 1 : -1
+      })
+      .map((key) => goals[key])
+  }
+
+  get pastGoals() {
     const tasks: Record<string, IGoal[]> = this.goals
-      // .filter((i) => !!i.date && (isCurrentDate(i.date) || isPastDate(i.date)))
+      .filter((i) => isPastGoal(i.date))
       .reduce((acc, i) => {
         if (!(i.date in acc)) {
           acc[i.date] = []
@@ -106,7 +145,9 @@ export default class GoalsStore implements IGoalsStore {
       }, {} as Record<string, IGoal[]>)
 
     return Object.keys(tasks)
-      .sort((a, b) => Date.parse(b) - Date.parse(a))
+      .sort((a, b) => {
+        return moment(a) < moment(b) ? 1 : -1
+      })
       .map((key) => tasks[key])
   }
 

@@ -6,7 +6,14 @@ export const pause = (ms?: number) =>
     setTimeout(resolve, ms || conf.mockTimeout)
   })
 
+export const addZeroBefore = (value: number): string => {
+  return value < 10 ? `0${value}` : `${value}`
+}
+
 export const getDate = (date: string | undefined): string => {
+  if (date && date.length <= 4) return moment(new Date(date)).format('YYYY')
+  if (date && date.length <= 7) return ucFirst(moment(new Date(date)).locale('ru').format('MMMM YYYY'))
+
   return date ? moment(new Date(date)).format('DD.MM.YYYY') : '--'
 }
 
@@ -48,4 +55,17 @@ export const isFutureDate = (date: string | Date): boolean => {
 
 export const ucFirst = (str: string): string => {
   return str[0].toUpperCase() + str.slice(1)
+}
+
+export const isPastGoal = (date: string): boolean => {
+  const currentDate = getDateUTC(new Date())
+  let preparedDate
+  if (date.length <= 4) {
+    preparedDate = moment(new Date(date)).add(1, 'y').add(-1, 's')
+  } else if (date.length <= 7) {
+    preparedDate = moment(new Date(date)).add(1, 'M').add(-1, 's')
+  } else {
+    preparedDate = moment(new Date(date))
+  }
+  return preparedDate.isBefore(moment(currentDate))
 }

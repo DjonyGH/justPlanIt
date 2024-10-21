@@ -8,6 +8,7 @@ import { Button } from '../../../../components/Button/Button'
 import dayjs from 'dayjs'
 import { CloseOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
+import { addZeroBefore } from '../../../../utils/utils'
 
 dayjs.locale('ru')
 
@@ -38,12 +39,12 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
     let date = `${goalForm.year}`
 
-    if (goalForm.month?.value) {
-      date = date + `-${goalForm.month?.value}`
+    if (goalForm.month) {
+      date = date + `-${goalForm.month}`
     }
 
-    if (goalForm.day?.value) {
-      date = date + `-${goalForm.day?.value}`
+    if (goalForm.day) {
+      date = date + `-${goalForm.day}`
     }
 
     const newGoal: INewGoal = {
@@ -139,7 +140,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
       ? Array(daysInMonth)
           .fill(1)
           .map((_, i) => ({
-            value: i + 1,
+            value: addZeroBefore(i + 1),
             label: i + 1,
           }))
       : []
@@ -177,7 +178,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
               <Form.Item
                 name='month'
-                initialValue={getMonthOptions().find((i) => +i.value === new Date().getMonth() + 1)}
+                initialValue={`${new Date().getMonth() + 1}`}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block', marginRight: '10px' }}
               >
                 <Select
@@ -190,8 +191,8 @@ export const Modal: React.FC<IProps> = observer((props) => {
                       const daysInMonth = getDaysInMonth(+e, form.getFieldValue('year'))
                       setDaysInMonth(daysInMonth)
                       const selectedDay = form.getFieldValue('day')
-                      if (selectedDay.value > daysInMonth) {
-                        form.setFieldValue('day', { value: 1, label: 1 })
+                      if (selectedDay > daysInMonth) {
+                        form.setFieldValue('day', '01')
                       }
                     }
                   }}
@@ -202,7 +203,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
               <Form.Item
                 name='day'
-                initialValue={getDaysOptions().slice(-1)[0]}
+                initialValue={daysInMonth && addZeroBefore(daysInMonth)}
                 style={{ width: 'calc(33% - 10px)', display: 'inline-block' }}
               >
                 <Select options={getDaysOptions()} disabled={!daysInMonth} allowClear suffixIcon={<CloseOutlined />} />
