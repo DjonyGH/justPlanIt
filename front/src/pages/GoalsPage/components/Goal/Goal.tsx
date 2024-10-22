@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 
@@ -14,6 +14,7 @@ import {
   MoreOutlined,
 } from '@ant-design/icons'
 import { useStore } from '../../../..'
+import { TaskList } from '../TaskList/TaskList'
 
 interface IProps {
   goal: IGoal
@@ -27,6 +28,8 @@ export const Goal: React.FC<IProps> = observer((props) => {
   const { goal, form, setIsModalOpen, setTaskId, setMode } = props
 
   const { goalsStore } = useStore()
+
+  const [isTaskListOpen, setIsTaskListOpen] = useState(false)
 
   const onEdit = (goal: IGoal) => {
     setMode(EMode.Edit)
@@ -57,36 +60,37 @@ export const Goal: React.FC<IProps> = observer((props) => {
     }
   }
 
-  const onAddTasks = async (id: string) => {}
-
   return (
-    <div className={`${style.goal}`}>
-      <div className={style.checkbox} onClick={() => onComplete(goal, !goal.isDone)}>
-        {!goal.isDone && !isPastGoal(goal.date) && <div className={style.empty} />}
-        {!goal.isDone && isPastGoal(goal.date) && <CloseOutlined style={{ color: 'var(--red)', fontSize: '18px' }} />}
-        {!!goal.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
-      </div>
-
-      <div className={style.title} onClick={() => goalsStore.setExpanded(null)}>
-        {goal.title}
-      </div>
-
-      <div className={style.edit}>
-        <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expandedThreeItems : ''}`}>
-          <BarsOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onAddTasks(goal.id)} />
-
-          <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(goal)} />
-          <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => onRemove(goal.id)} />
+    <>
+      <div className={`${style.goal}`}>
+        <div className={style.checkbox} onClick={() => onComplete(goal, !goal.isDone)}>
+          {!goal.isDone && !isPastGoal(goal.date) && <div className={style.empty} />}
+          {!goal.isDone && isPastGoal(goal.date) && <CloseOutlined style={{ color: 'var(--red)', fontSize: '18px' }} />}
+          {!!goal.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
         </div>
 
-        <MoreOutlined
-          style={{ fontSize: '18px', marginRight: '-5px' }}
-          onClick={(e) => {
-            goalsStore.setExpanded(goal.id)
-            e.stopPropagation()
-          }}
-        />
+        <div className={style.title} onClick={() => goalsStore.setExpanded(null)}>
+          {goal.title}
+        </div>
+
+        <div className={style.edit}>
+          <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expandedThreeItems : ''}`}>
+            <BarsOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => setIsTaskListOpen(true)} />
+
+            <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(goal)} />
+            <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => onRemove(goal.id)} />
+          </div>
+
+          <MoreOutlined
+            style={{ fontSize: '18px', marginRight: '-5px' }}
+            onClick={(e) => {
+              goalsStore.setExpanded(goal.id)
+              e.stopPropagation()
+            }}
+          />
+        </div>
       </div>
-    </div>
+      <TaskList goalId={goal.id} isModalOpen={isTaskListOpen} setIsModalOpen={setIsTaskListOpen} />
+    </>
   )
 })
