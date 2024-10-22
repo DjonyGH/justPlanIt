@@ -12,7 +12,7 @@ export interface ITasksStore {
   tasksWithoutDate: ITask[]
   setTasks: (data: ITask[]) => void
   setExpanded: (value: string | null) => void
-  fetchTasks: () => Promise<void>
+  fetchTasks: (goalId?: string) => Promise<void>
   completeTasks: (taskId: string, isDone: boolean) => Promise<void>
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   sendToNextDay: (taskId: string) => Promise<boolean | undefined>
@@ -39,10 +39,10 @@ export default class TasksStore implements ITasksStore {
     else this.expanded = { [value]: true }
   }
 
-  async fetchTasks() {
+  async fetchTasks(goalId?: string) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
-      let tasks: ITask[] = await http.get<ITask[]>(`/tasks`)
+      let tasks: ITask[] = await http.get<ITask[]>(`/tasks?${goalId ? 'goalId=' + goalId : ''}`)
       this.setTasks(tasks.map((i) => ({ ...i, id: i._id })))
     } catch (e: unknown) {
       console.warn(e)
@@ -103,9 +103,8 @@ export default class TasksStore implements ITasksStore {
   async createTask(newTask: INewTask) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
-      console.log('newTask', newTask)
       let createdTask: ITask = await http.post<ITask>(`/tasks`, newTask)
-      console.log('newTask', createdTask)
+
       return {
         ...createdTask,
         id: createdTask._id,

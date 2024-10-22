@@ -30,6 +30,10 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   useEffect(() => {
     if (!userStore.user?.id) return
     tasksStore.fetchTasks()
+
+    return () => {
+      tasksStore.setExpanded(null)
+    }
   }, [userStore.user?.id]) // eslint-disable-line
 
   const groupedTasks: Record<ETab.Current | ETab.Future, ITask[][]> = {

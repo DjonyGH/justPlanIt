@@ -27,6 +27,10 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
   useEffect(() => {
     if (!userStore.user?.id) return
     goalsStore.fetchGoals()
+
+    return () => {
+      goalsStore.setExpanded(null)
+    }
   }, [userStore.user?.id]) // eslint-disable-line
 
   const groupedGoals: Record<ETab, IGoal[][]> = {

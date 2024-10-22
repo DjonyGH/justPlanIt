@@ -4,10 +4,12 @@ import { IGoal, INewGoal, TExpanded } from '../types'
 import http from '../../../services/http.service'
 import { isPastGoal } from '../../../utils/utils'
 import moment from 'moment'
+import { ITask } from '../../TasksPage/types'
 
 export interface IGoalsStore {
   goals: IGoal[]
   expanded: TExpanded
+  goalTasks: ITask[]
   currentGoals: IGoal[][]
   pastGoals: IGoal[][]
   // futureTasks: ITask[][]
@@ -27,6 +29,7 @@ export interface IGoalsStore {
 export default class GoalsStore implements IGoalsStore {
   goals: IGoal[] = []
   expanded: TExpanded = {}
+  goalTasks: ITask[] = []
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this)

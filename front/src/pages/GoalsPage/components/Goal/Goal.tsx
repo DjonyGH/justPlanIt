@@ -90,7 +90,7 @@ export const Goal: React.FC<IProps> = observer((props) => {
           />
         </div>
       </div>
-      <TaskList goalId={goal.id} isModalOpen={isTaskListOpen} setIsModalOpen={setIsTaskListOpen} />
+      <TaskList goalId={goal.id} isOpen={isTaskListOpen} setIsOpen={setIsTaskListOpen} />
     </>
   )
 })
