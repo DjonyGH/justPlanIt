@@ -5,7 +5,7 @@ import { useStore } from '../..'
 import { Form } from 'antd'
 import { EMode, INewTask, ITask } from './types'
 import { getDate, getDayName, ucFirst } from '../../utils/utils'
-import { Tasks } from './components/Task/Tasks'
+import { Task } from './components/Task/Task'
 import { Menu } from './components/Menu/Menu'
 import { Modal } from './components/Modal/Modal'
 
@@ -61,7 +61,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
               {i
                 .sort((a, b) => a.order - b.order)
                 .map((task, idx, arr) => (
-                  <Tasks
+                  <Task
                     task={task}
                     form={form}
                     setIsModalOpen={setIsModalOpen}
@@ -82,7 +82,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
           {tasksStore.tasksWithoutDate
             .sort((a, b) => a.order - b.order)
             .map((task) => (
-              <Tasks
+              <Task
                 task={task}
                 form={form}
                 setIsModalOpen={setIsModalOpen}

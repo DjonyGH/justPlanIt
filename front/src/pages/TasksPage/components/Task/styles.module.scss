@@ -39,7 +39,11 @@
   box-sizing: content-box;
   transition: width 0.5s ease-in-out, padding 0.5s ease-in-out;
 }
-.expanded {
+.expanded3Items {
+  padding: 0 10px;
+  width: 80px;
+}
+.expanded5Items {
   padding: 0 10px;
   width: 160px;
 }

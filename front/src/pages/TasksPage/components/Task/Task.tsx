@@ -24,17 +24,20 @@ interface IProps {
   task: ITask
   form: FormInstance<INewTask>
   setIsModalOpen: (value: boolean) => void
-  setIsWithoutDate: (value: boolean) => void
+  setIsWithoutDate?: (value: boolean) => void
   setTaskId: (value: string) => void
   setMode: (value: EMode) => void
   isFirst?: boolean
   isLast?: boolean
+  isGoalTask?: boolean
 }
 
-export const Tasks: React.FC<IProps> = observer((props) => {
-  const { task, form, setIsModalOpen, setIsWithoutDate, setTaskId, setMode, isFirst, isLast } = props
+export const Task: React.FC<IProps> = observer((props) => {
+  const { task, form, setIsModalOpen, setIsWithoutDate, setTaskId, setMode, isFirst, isLast, isGoalTask } = props
 
-  const { tasksStore } = useStore()
+  const { tasksStore, goalTasksStore } = useStore()
+
+  const store = isGoalTask ? goalTasksStore : tasksStore
 
   const onEdit = (task: ITask) => {
     setMode(EMode.Edit)
@@ -42,44 +45,44 @@ export const Tasks: React.FC<IProps> = observer((props) => {
     form.setFieldValue('title', task.title)
     form.setFieldValue('date', dayjs(task.date))
     form.setFieldValue('isImportant', task.isImportant)
-    setIsWithoutDate(!task.date)
+    setIsWithoutDate?.(!task.date)
     setTaskId(task.id)
   }
 
   const onChange = async (task: ITask, isDone: boolean) => {
-    await tasksStore.completeTasks(task.id, isDone)
-    const tasks = [...tasksStore.tasks]
+    await store.completeTasks(task.id, isDone)
+    const tasks = [...store.tasks]
     const newTask = tasks.find((i) => i.id === task.id)
     if (newTask) {
       newTask.isDone = isDone
     }
-    tasksStore.setTasks(tasks)
+    store.setTasks(tasks)
   }
 
   const removeTask = async (id: string) => {
-    const isSucces = await tasksStore.removeTask(id)
+    const isSucces = await store.removeTask(id)
     if (isSucces) {
-      const tasks = tasksStore.tasks.filter((i) => i.id !== id)
-      tasksStore.setTasks(tasks)
-      tasksStore.setExpanded(null)
+      const tasks = store.tasks.filter((i) => i.id !== id)
+      store.setTasks(tasks)
+      store.setExpanded(null)
     }
   }
 
   const orderDown = async (id: string) => {
-    const isSuccess = await tasksStore.changeOrderTask(id, -1)
-    isSuccess && tasksStore.fetchTasks()
+    const isSuccess = await store.changeOrderTask(id, -1)
+    isSuccess && store.fetchTasks()
   }
   const orderUp = async (id: string) => {
-    const isSuccess = await tasksStore.changeOrderTask(id, 1)
-    isSuccess && tasksStore.fetchTasks()
+    const isSuccess = await store.changeOrderTask(id, 1)
+    isSuccess && store.fetchTasks()
   }
   const toCurrentDay = async (id: string) => {
-    const isSuccess = await tasksStore.sendToCurrentDay(id)
-    isSuccess && tasksStore.fetchTasks()
+    const isSuccess = await store.sendToCurrentDay(id)
+    isSuccess && store.fetchTasks()
   }
   const toNextDay = async (id: string) => {
-    const isSuccess = await tasksStore.sendToNextDay(id)
-    isSuccess && tasksStore.fetchTasks()
+    const isSuccess = await store.sendToNextDay(id)
+    isSuccess && store.fetchTasks()
   }
 
   return (
@@ -90,7 +93,7 @@ export const Tasks: React.FC<IProps> = observer((props) => {
         {!!task.isDone && <CheckOutlined style={{ color: 'var(--green)', fontSize: '18px' }} />}
       </div>
 
-      <div className={style.title} onClick={() => tasksStore.setExpanded(null)}>
+      <div className={style.title} onClick={() => store.setExpanded(null)}>
         {!!task.isImportant && (
           <ExclamationCircleOutlined style={{ color: 'var(--red)', fontSize: '14px', marginRight: '5px' }} />
         )}{' '}
@@ -98,24 +101,32 @@ export const Tasks: React.FC<IProps> = observer((props) => {
       </div>
 
       <div className={style.edit}>
-        <div className={`${style.controls} ${!!tasksStore.expanded[task.id] ? style.expanded : ''}`}>
-          <CaretUpOutlined
-            style={{ color: 'var(--gray)', fontSize: '22px' }}
-            className={`${isFirst ? style.disabled : ''}`}
-            onClick={() => !isFirst && orderDown(task.id)}
-          />
-          <CaretDownOutlined
-            style={{ color: 'var(--gray)', fontSize: '22px' }}
-            className={`${isLast ? style.disabled : ''}`}
-            onClick={() => !isLast && orderUp(task.id)}
-          />
+        <div
+          className={`${style.controls} ${
+            !!store.expanded[task.id] ? (isGoalTask ? style.expanded3Items : style.expanded5Items) : ''
+          }`}
+        >
+          {!isGoalTask && (
+            <CaretUpOutlined
+              style={{ color: 'var(--gray)', fontSize: '22px' }}
+              className={`${isFirst ? style.disabled : ''}`}
+              onClick={() => !isFirst && orderDown(task.id)}
+            />
+          )}
+          {!isGoalTask && (
+            <CaretDownOutlined
+              style={{ color: 'var(--gray)', fontSize: '22px' }}
+              className={`${isLast ? style.disabled : ''}`}
+              onClick={() => !isLast && orderUp(task.id)}
+            />
+          )}
           {(!isCurrentDate(task.date) || !task.date) && (
             <PullRequestOutlined
               style={{ color: 'var(--gray)', fontSize: '22px' }}
               onClick={() => toCurrentDay(task.id)}
             />
           )}
-          {(isCurrentDate(task.date) || !task.date) && (
+          {!isGoalTask && (isCurrentDate(task.date) || !task.date) && (
             <FastForwardOutlined
               style={{ color: 'var(--gray)', fontSize: '22px' }}
               onClick={() => toNextDay(task.id)}
@@ -128,7 +139,7 @@ export const Tasks: React.FC<IProps> = observer((props) => {
         <MoreOutlined
           style={{ fontSize: '18px', marginRight: '-5px' }}
           onClick={(e) => {
-            tasksStore.setExpanded(task.id)
+            store.setExpanded(task.id)
             e.stopPropagation()
           }}
         />

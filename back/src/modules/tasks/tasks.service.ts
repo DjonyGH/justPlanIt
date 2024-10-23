@@ -26,6 +26,16 @@ export class TasksService {
     }
   }
 
+  async getAllTasksByGoalId(goalId: GUID): Promise<TaskModel[] | null> {
+    console.log('service: getAllTasksByGoalId');
+    try {
+      return this.tasksModel.find({ goalId });
+    } catch (e: any) {
+      console.error('ERROR: service getAllTasksByGoalId', e);
+      throw new HttpException(TASKS_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+  }
+
   async completeTask(taskId: GUID, isDone: boolean): Promise<TaskModel | null> {
     console.log('service: completeTask');
     try {

@@ -22,8 +22,10 @@
 
   .body {
     display: flex;
+    flex-direction: column;
     width: 100%;
     padding: 20px 0;
+    gap: 10px;
     .menu {
       display: flex;
       justify-content: space-between;
@@ -33,6 +35,23 @@
         display: flex;
         gap: 5px;
       }
+    }
+    .taskList {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      background-color: var(--bgLight);
+      border-radius: 5px;
+      width: 100%;
+      padding: 10px;
+      gap: 12px;
+    }
+    .noTasks {
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
     }
   }
 }

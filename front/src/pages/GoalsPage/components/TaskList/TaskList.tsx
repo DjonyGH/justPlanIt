@@ -6,6 +6,7 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button } from '../../../../components/Button/Button'
 import { EMode, INewTask } from '../../../TasksPage/types'
 import { Form } from 'antd'
+import { Task } from '../../../TasksPage/components/Task/Task'
 
 interface IProps {
   goalId: string | undefined
@@ -19,12 +20,21 @@ export const TaskList: React.FC<IProps> = observer((props) => {
   const { goalTasksStore } = useStore()
   const [form] = Form.useForm<INewTask>()
 
+  const [taskId, setTaskId] = useState<string | undefined>()
   const [mode, setMode] = useState<EMode>(EMode.Create)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const load = async () => {
+    if (!isOpen) return
+    setIsLoading(true)
+    await goalTasksStore.fetchTasks(goalId)
+    setIsLoading(false)
+  }
 
   useEffect(() => {
-    goalTasksStore.fetchTasks(goalId)
-  }, [goalId]) // eslint-disable-line
+    load()
+  }, [goalId, isOpen]) // eslint-disable-line
 
   const onCreate = () => {
     goalTasksStore.setExpanded(null)
@@ -49,6 +59,27 @@ export const TaskList: React.FC<IProps> = observer((props) => {
               <div className={style.leftSide}></div>
               <Button text={() => <PlusOutlined />} type='primary' size='square' onClick={onCreate} />
             </div>
+
+            {isLoading ? (
+              <div className={style.noTasks}>Загрузка ...</div>
+            ) : (
+              <div className={style.taskList}>
+                {goalTasksStore.tasks.map((task) => (
+                  <Task
+                    task={task}
+                    form={form}
+                    setIsModalOpen={setIsModalOpen}
+                    setTaskId={setTaskId}
+                    setMode={setMode}
+                    key={task.id}
+                    isGoalTask
+                  />
+                ))}
+                {!goalTasksStore.tasks.length && (
+                  <div className={style.noTasks}>Для данной цели задачи отсутствуют</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

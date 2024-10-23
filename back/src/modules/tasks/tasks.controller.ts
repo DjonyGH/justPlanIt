@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Session,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
@@ -24,9 +25,16 @@ export class TasksController {
 
   // Возвращает все задачи для юзера
   @Get()
-  async getTasks(@Session() session: Record<string, any>) {
+  async getTasks(
+    @Query() query: { goalId?: string },
+    @Session() session: Record<string, any>,
+  ) {
     // console.log('controller: getTasks');
     const userId = getGUIDFromString(session.userId);
+    const goalId = query.goalId && getGUIDFromString(query.goalId);
+    if (goalId) {
+      return this.tasksSevice.getAllTasksByGoalId(goalId);
+    }
     return this.tasksSevice.getAllTasksByUserId(userId);
   }
 
