@@ -2,28 +2,24 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../../../..'
-import { Form, FormInstance, Select } from 'antd'
-import { EMode, IGoalForm, INewGoal, IOption } from '../../types'
+import { Form, Select } from 'antd'
+import { IGoal, IGoalForm, INewGoal, IOption } from '../../types'
 import { Button } from '../../../../components/Button/Button'
-import dayjs from 'dayjs'
 import { CloseOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
 import { addZeroBefore, getCurrentMonth, getCurrentYear } from '../../../../utils/utils'
 
-dayjs.locale('ru')
-
 interface IProps {
-  goalId: string | undefined
-  mode: EMode
-  form: FormInstance<IGoalForm>
+  goal: IGoal | undefined
   isModalOpen: boolean
   setIsModalOpen: (value: boolean) => void
 }
 
 export const Modal: React.FC<IProps> = observer((props) => {
-  const { goalId, mode, form, isModalOpen, setIsModalOpen } = props
+  const { goal, isModalOpen, setIsModalOpen } = props
 
   const { goalsStore } = useStore()
+  const [form] = Form.useForm<IGoalForm>()
 
   const [daysInMonth, setDaysInMonth] = useState<number | undefined>(undefined)
 
@@ -32,7 +28,14 @@ export const Modal: React.FC<IProps> = observer((props) => {
     const currentMonth = getCurrentMonth()
     const daysInMonth = getDaysInMonth(currentMonth, currentYaer)
     setDaysInMonth(daysInMonth)
-  }, [])
+    form.resetFields()
+    if (goal) {
+      form.setFieldValue('title', goal.title)
+      form.setFieldValue('year', goal.date.substring(0, 4))
+      form.setFieldValue('month', goal.date.substring(5, 7))
+      form.setFieldValue('day', goal.date.substring(8, 10))
+    }
+  }, [isModalOpen, goal?.id]) // eslint-disable-line
 
   const onSubmit = async () => {
     const goalForm: IGoalForm = form.getFieldsValue()
@@ -53,11 +56,10 @@ export const Modal: React.FC<IProps> = observer((props) => {
     }
 
     let isSuccess
-    if (mode === EMode.Create) {
+    if (!goal) {
       isSuccess = await goalsStore.createGoal(newGoal)
-    }
-    if (mode === EMode.Edit && goalId) {
-      isSuccess = await goalsStore.updateGoal(goalId, newGoal)
+    } else {
+      isSuccess = await goalsStore.updateGoal(goal.id, newGoal)
     }
 
     if (isSuccess) {
@@ -150,7 +152,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
       {isModalOpen && (
         <div className={style.modal}>
           <div className={style.header}>
-            {mode === EMode.Create ? 'Новая цель' : 'Редактирование'}
+            {!goal ? 'Новая цель' : 'Редактирование'}
             <div onClick={() => setIsModalOpen(false)}>
               <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
             </div>
@@ -213,7 +215,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
           <div className={style.footer}>
             <Button
               key={1}
-              text={mode === EMode.Create ? 'Создать' : 'Редактировать'}
+              text={!goal ? 'Создать' : 'Редактировать'}
               size='min'
               type='primary'
               onClick={() => form.submit()}

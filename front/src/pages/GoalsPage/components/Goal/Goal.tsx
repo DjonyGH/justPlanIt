@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 
-import { FormInstance } from 'antd'
-import { EMode, IGoal, IGoalForm } from '../../types'
+import { IGoal } from '../../types'
 import { isPastGoal } from '../../../../utils/utils'
 import {
   BarsOutlined,
@@ -18,27 +17,20 @@ import { TaskList } from '../TaskList/TaskList'
 
 interface IProps {
   goal: IGoal
-  form: FormInstance<IGoalForm>
   setIsModalOpen: (value: boolean) => void
-  setTaskId: (value: string) => void
-  setMode: (value: EMode) => void
+  setSelectedGoal: (value: IGoal) => void
 }
 
 export const Goal: React.FC<IProps> = observer((props) => {
-  const { goal, form, setIsModalOpen, setTaskId, setMode } = props
+  const { goal, setIsModalOpen, setSelectedGoal } = props
 
   const { goalsStore } = useStore()
 
   const [isTaskListOpen, setIsTaskListOpen] = useState(false)
 
   const onEdit = (goal: IGoal) => {
-    setMode(EMode.Edit)
+    setSelectedGoal(goal)
     setIsModalOpen(true)
-    form.setFieldValue('title', goal.title)
-    form.setFieldValue('year', goal.date.substring(0, 4))
-    form.setFieldValue('month', goal.date.substring(5, 7))
-    form.setFieldValue('day', goal.date.substring(8, 10))
-    setTaskId(goal.id)
   }
 
   const onComplete = async (goal: IGoal, isDone: boolean) => {
