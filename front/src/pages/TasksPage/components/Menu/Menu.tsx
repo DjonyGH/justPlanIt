@@ -1,33 +1,28 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
-import { EMode, INewTask } from '../../types'
+import { ITask } from '../../types'
 import { Button } from '../../../../components/Button/Button'
 import { PlusOutlined } from '@ant-design/icons'
-import { FormInstance } from 'antd/lib'
 import { ETab } from '../../TasksPage'
 import { useStore } from '../../../..'
 
 interface IProps {
   tab: ETab
-  form: FormInstance<INewTask>
   setIsModalOpen: (value: boolean) => void
-  setTaskId: (value: string | undefined) => void
-  setMode: (value: EMode) => void
+  setSelectedTask: (value: ITask | undefined) => void
   setTab: (value: ETab) => void
 }
 
 export const Menu: React.FC<IProps> = observer((props) => {
-  const { tab, form, setIsModalOpen, setTaskId, setMode, setTab } = props
+  const { tab, setIsModalOpen, setSelectedTask, setTab } = props
 
   const { tasksStore } = useStore()
 
   const onCreate = () => {
     tasksStore.setExpanded(null)
-    setMode(EMode.Create)
     setIsModalOpen(true)
-    form.resetFields()
-    setTaskId(undefined)
+    setSelectedTask(undefined)
   }
 
   const onTabClick = (value: ETab) => {

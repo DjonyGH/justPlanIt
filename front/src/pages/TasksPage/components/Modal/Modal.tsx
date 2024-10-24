@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../../../..'
-import { Checkbox, Form, DatePicker, ConfigProvider, FormInstance } from 'antd'
-import { EMode, INewTask } from '../../types'
+import { Checkbox, Form, DatePicker, ConfigProvider } from 'antd'
+import { INewTask, ITask } from '../../types'
 import { getDateUTC } from '../../../../utils/utils'
 import { Button } from '../../../../components/Button/Button'
 import dayjs from 'dayjs'
@@ -11,22 +11,30 @@ import { CloseOutlined } from '@ant-design/icons'
 import TextArea from 'antd/es/input/TextArea'
 import ru_RU from 'antd/lib/locale/ru_RU'
 
-dayjs.locale('ru')
-
 interface IProps {
-  taskId: string | undefined
-  mode: EMode
-  form: FormInstance<INewTask>
+  task?: ITask
   isModalOpen: boolean
-  isWithoutDate: boolean
   setIsModalOpen: (value: boolean) => void
-  setIsWithoutDate: (value: boolean) => void
 }
 
 export const Modal: React.FC<IProps> = observer((props) => {
-  const { taskId, mode, form, isModalOpen, isWithoutDate, setIsModalOpen, setIsWithoutDate } = props
+  const { task, isModalOpen, setIsModalOpen } = props
 
   const { tasksStore } = useStore()
+
+  const [form] = Form.useForm<INewTask>()
+
+  const [isWithoutDate, setIsWithoutDate] = useState(false)
+
+  useEffect(() => {
+    form.resetFields()
+    setIsWithoutDate(!!task?.date)
+    if (task) {
+      form.setFieldValue('title', task.title)
+      form.setFieldValue('date', dayjs(task.date))
+      form.setFieldValue('isImportant', task.isImportant)
+    }
+  }, [isModalOpen, task?.id]) // eslint-disable-line
 
   const onSubmit = async () => {
     const newTask: INewTask = form.getFieldsValue()
@@ -34,11 +42,10 @@ export const Modal: React.FC<IProps> = observer((props) => {
     newTask.date = isWithoutDate || !newTask.date ? undefined : getDateUTC(newTask.date)
 
     let isSuccess
-    if (mode === EMode.Create) {
+    if (!task) {
       isSuccess = await tasksStore.createTask(newTask)
-    }
-    if (mode === EMode.Edit && taskId) {
-      isSuccess = await tasksStore.updateTask(taskId, newTask)
+    } else {
+      isSuccess = await tasksStore.updateTask(task.id, newTask)
     }
 
     if (isSuccess) {
@@ -56,7 +63,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
       {isModalOpen && (
         <div className={style.modal}>
           <div className={style.header}>
-            {mode === EMode.Create ? 'Новая задача' : 'Редактирование'}
+            {!task ? 'Новая задача' : 'Редактирование'}
             <div onClick={() => setIsModalOpen(false)}>
               <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
             </div>
@@ -105,7 +112,7 @@ export const Modal: React.FC<IProps> = observer((props) => {
           <div className={style.footer}>
             <Button
               key={1}
-              text={mode === EMode.Create ? 'Создать' : 'Редактировать'}
+              text={!task ? 'Создать' : 'Редактировать'}
               size='min'
               type='primary'
               onClick={() => form.submit()}

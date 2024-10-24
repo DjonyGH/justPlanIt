@@ -2,10 +2,8 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 
-import { FormInstance } from 'antd'
-import { EMode, INewTask, ITask } from '../../types'
+import { ITask } from '../../types'
 import { isCurrentDate, isPastDate } from '../../../../utils/utils'
-import dayjs from 'dayjs'
 import {
   MoreOutlined,
   CaretDownOutlined,
@@ -23,31 +21,23 @@ import { useStore } from '../../../..'
 
 interface IProps {
   task: ITask
-  form: FormInstance<INewTask>
   setIsModalOpen: (value: boolean) => void
-  setIsWithoutDate?: (value: boolean) => void
-  setTaskId: (value: string) => void
-  setMode: (value: EMode) => void
+  setSelectedTask: (value: ITask) => void
   isFirst?: boolean
   isLast?: boolean
   isGoalTask?: boolean
 }
 
 export const Task: React.FC<IProps> = observer((props) => {
-  const { task, form, setIsModalOpen, setIsWithoutDate, setTaskId, setMode, isFirst, isLast, isGoalTask } = props
+  const { task, setIsModalOpen, setSelectedTask, isFirst, isLast, isGoalTask } = props
 
   const { tasksStore, goalTasksStore } = useStore()
 
   const store = isGoalTask ? goalTasksStore : tasksStore
 
   const onEdit = (task: ITask) => {
-    setMode(EMode.Edit)
+    setSelectedTask(task)
     setIsModalOpen(true)
-    form.setFieldValue('title', task.title)
-    form.setFieldValue('date', dayjs(task.date))
-    form.setFieldValue('isImportant', task.isImportant)
-    setIsWithoutDate?.(!task.date)
-    setTaskId(task.id)
   }
 
   const onChange = async (task: ITask, isDone: boolean) => {

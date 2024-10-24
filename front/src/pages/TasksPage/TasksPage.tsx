@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../..'
-import { Form } from 'antd'
-import { EMode, INewTask, ITask } from './types'
+import { ITask } from './types'
 import { getDate, getDayName, ucFirst } from '../../utils/utils'
 import { Task } from './components/Task/Task'
 import { Menu } from './components/Menu/Menu'
@@ -22,10 +21,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const [tab, setTab] = useState<ETab>(ETab.Current)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const [isWithoutDate, setIsWithoutDate] = useState(false)
-  const [mode, setMode] = useState<EMode>(EMode.Create)
-  const [taskId, setTaskId] = useState<string | undefined>()
-  const [form] = Form.useForm<INewTask>()
+  const [selectedTask, setSelectedTask] = useState<ITask | undefined>()
 
   useEffect(() => {
     if (!userStore.user?.id) return
@@ -43,14 +39,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
 
   return (
     <div className={style.taskPage} onClick={(e) => tasksStore.setExpanded(null)}>
-      <Menu
-        tab={tab}
-        form={form}
-        setIsModalOpen={setIsModalOpen}
-        setMode={setMode}
-        setTab={setTab}
-        setTaskId={setTaskId}
-      />
+      <Menu tab={tab} setIsModalOpen={setIsModalOpen} setTab={setTab} setSelectedTask={setSelectedTask} />
       <div className={style.content}>
         {tab !== ETab.WithoutDate &&
           groupedTasks[tab].map((i) => (
@@ -64,11 +53,8 @@ export const TasksPage: React.FC<IProps> = observer(() => {
                   .map((task, idx, arr) => (
                     <Task
                       task={task}
-                      form={form}
                       setIsModalOpen={setIsModalOpen}
-                      setIsWithoutDate={setIsWithoutDate}
-                      setTaskId={setTaskId}
-                      setMode={setMode}
+                      setSelectedTask={setSelectedTask}
                       key={task.id}
                       isFirst={!idx}
                       isLast={idx === arr.length - 1}
@@ -83,29 +69,13 @@ export const TasksPage: React.FC<IProps> = observer(() => {
             {tasksStore.tasksWithoutDate
               .sort((a, b) => a.order - b.order)
               .map((task) => (
-                <Task
-                  task={task}
-                  form={form}
-                  setIsModalOpen={setIsModalOpen}
-                  setIsWithoutDate={setIsWithoutDate}
-                  setTaskId={setTaskId}
-                  setMode={setMode}
-                  key={task.id}
-                />
+                <Task task={task} setIsModalOpen={setIsModalOpen} setSelectedTask={setSelectedTask} key={task.id} />
               ))}
           </div>
         )}
       </div>
 
-      <Modal
-        mode={mode}
-        form={form}
-        taskId={taskId}
-        isModalOpen={isModalOpen}
-        isWithoutDate={isWithoutDate}
-        setIsModalOpen={setIsModalOpen}
-        setIsWithoutDate={setIsWithoutDate}
-      />
+      <Modal task={selectedTask} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   )
 })
