@@ -17,6 +17,7 @@ import {
   ExclamationCircleOutlined,
   FastForwardOutlined,
   PullRequestOutlined,
+  AimOutlined,
 } from '@ant-design/icons'
 import { useStore } from '../../../..'
 
@@ -97,6 +98,7 @@ export const Task: React.FC<IProps> = observer((props) => {
         {!!task.isImportant && (
           <ExclamationCircleOutlined style={{ color: 'var(--red)', fontSize: '14px', marginRight: '5px' }} />
         )}{' '}
+        {!!task.goalId && <AimOutlined style={{ color: 'var(--blue)', fontSize: '14px', marginRight: '5px' }} />}{' '}
         {task.title}
       </div>
 

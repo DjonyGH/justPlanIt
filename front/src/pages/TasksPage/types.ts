@@ -7,6 +7,7 @@ export interface ITask extends IBaseItem {
   userId: string
   order: number
   isImportant?: boolean
+  goalId?: string
 }
 
 export interface INewTask {

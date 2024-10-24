@@ -42,7 +42,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   }
 
   return (
-    <div className={style.mainPage} onClick={(e) => tasksStore.setExpanded(null)}>
+    <div className={style.taskPage} onClick={(e) => tasksStore.setExpanded(null)}>
       <Menu
         tab={tab}
         form={form}
@@ -51,49 +51,51 @@ export const TasksPage: React.FC<IProps> = observer(() => {
         setTab={setTab}
         setTaskId={setTaskId}
       />
-      {tab !== ETab.WithoutDate &&
-        groupedTasks[tab].map((i) => (
-          <div className={style.day} key={i[0].date}>
-            <div className={style.date}>
-              {getDate(i[0].date)} {ucFirst(getDayName(i[0].date))}
+      <div className={style.content}>
+        {tab !== ETab.WithoutDate &&
+          groupedTasks[tab].map((i) => (
+            <div className={style.day} key={i[0].date}>
+              <div className={style.date}>
+                {getDate(i[0].date)} {ucFirst(getDayName(i[0].date))}
+              </div>
+              <div className={style.taskList}>
+                {i
+                  .sort((a, b) => a.order - b.order)
+                  .map((task, idx, arr) => (
+                    <Task
+                      task={task}
+                      form={form}
+                      setIsModalOpen={setIsModalOpen}
+                      setIsWithoutDate={setIsWithoutDate}
+                      setTaskId={setTaskId}
+                      setMode={setMode}
+                      key={task.id}
+                      isFirst={!idx}
+                      isLast={idx === arr.length - 1}
+                    />
+                  ))}
+              </div>
             </div>
-            <div className={style.taskList}>
-              {i
-                .sort((a, b) => a.order - b.order)
-                .map((task, idx, arr) => (
-                  <Task
-                    task={task}
-                    form={form}
-                    setIsModalOpen={setIsModalOpen}
-                    setIsWithoutDate={setIsWithoutDate}
-                    setTaskId={setTaskId}
-                    setMode={setMode}
-                    key={task.id}
-                    isFirst={!idx}
-                    isLast={idx === arr.length - 1}
-                  />
-                ))}
-            </div>
-          </div>
-        ))}
+          ))}
 
-      {tab === ETab.WithoutDate && (
-        <div className={style.taskList}>
-          {tasksStore.tasksWithoutDate
-            .sort((a, b) => a.order - b.order)
-            .map((task) => (
-              <Task
-                task={task}
-                form={form}
-                setIsModalOpen={setIsModalOpen}
-                setIsWithoutDate={setIsWithoutDate}
-                setTaskId={setTaskId}
-                setMode={setMode}
-                key={task.id}
-              />
-            ))}
-        </div>
-      )}
+        {tab === ETab.WithoutDate && (
+          <div className={style.taskList}>
+            {tasksStore.tasksWithoutDate
+              .sort((a, b) => a.order - b.order)
+              .map((task) => (
+                <Task
+                  task={task}
+                  form={form}
+                  setIsModalOpen={setIsModalOpen}
+                  setIsWithoutDate={setIsWithoutDate}
+                  setTaskId={setTaskId}
+                  setMode={setMode}
+                  key={task.id}
+                />
+              ))}
+          </div>
+        )}
+      </div>
 
       <Modal
         mode={mode}

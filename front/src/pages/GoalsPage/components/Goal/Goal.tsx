@@ -75,7 +75,13 @@ export const Goal: React.FC<IProps> = observer((props) => {
 
         <div className={style.edit}>
           <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expandedThreeItems : ''}`}>
-            <BarsOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => setIsTaskListOpen(true)} />
+            <BarsOutlined
+              style={{ color: 'var(--gray)', fontSize: '20px' }}
+              onClick={() => {
+                setIsTaskListOpen(true)
+                goalsStore.setExpanded(null)
+              }}
+            />
 
             <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(goal)} />
             <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => onRemove(goal.id)} />
