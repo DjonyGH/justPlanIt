@@ -39,16 +39,18 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
     <div className={style.goalsPage}>
       <Menu tab={tab} setIsModalOpen={setIsModalOpen} setSelectedGoal={setSelectedGoal} setTab={setTab} />
 
-      {groupedGoals[tab].map((i) => (
-        <div className={style.goalListWrapper} key={i[0].date}>
-          <div className={style.date}>{getDate(i[0].date)}</div>
-          <div className={style.goalList}>
-            {i.map((goal) => (
-              <Goal goal={goal} setIsModalOpen={setIsModalOpen} setSelectedGoal={setSelectedGoal} key={goal.id} />
-            ))}
+      <div className={style.content}>
+        {groupedGoals[tab].map((i) => (
+          <div className={style.goalListWrapper} key={i[0].date}>
+            <div className={style.date}>{getDate(i[0].date)}</div>
+            <div className={style.goalList}>
+              {i.map((goal) => (
+                <Goal goal={goal} setIsModalOpen={setIsModalOpen} setSelectedGoal={setSelectedGoal} key={goal.id} />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       <Modal goal={selectedGoal} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>

@@ -7,15 +7,16 @@ import { Button } from '../../../../components/Button/Button'
 import { ITask } from '../../../TasksPage/types'
 import { Task } from '../../../TasksPage/components/Task/Task'
 import { Modal } from '../../../TasksPage/components/Modal/Modal'
+import { IGoal } from '../../types'
 
 interface IProps {
-  goalId: string | undefined
+  goal: IGoal | undefined
   isOpen: boolean
   setIsOpen: (value: boolean) => void
 }
 
 export const TaskList: React.FC<IProps> = observer((props) => {
-  const { goalId, isOpen, setIsOpen } = props
+  const { goal, isOpen, setIsOpen } = props
 
   const { goalTasksStore } = useStore()
 
@@ -24,15 +25,15 @@ export const TaskList: React.FC<IProps> = observer((props) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const load = async () => {
-    if (!isOpen) return
+    if (!isOpen || !goal) return
     setIsLoading(true)
-    await goalTasksStore.fetchTasks(goalId)
+    await goalTasksStore.fetchTasks(goal.id)
     setIsLoading(false)
   }
 
   useEffect(() => {
     load()
-  }, [goalId, isOpen]) // eslint-disable-line
+  }, [goal?.id, isOpen]) // eslint-disable-line
 
   const onCreate = () => {
     setSelectedTask(undefined)
@@ -46,7 +47,7 @@ export const TaskList: React.FC<IProps> = observer((props) => {
         <>
           <div className={style.modal}>
             <div className={style.header}>
-              Список задач
+              <div>{goal?.title}</div>
               <div onClick={() => setIsOpen(false)}>
                 <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
               </div>
@@ -54,7 +55,9 @@ export const TaskList: React.FC<IProps> = observer((props) => {
 
             <div className={style.body}>
               <div className={style.menu}>
-                <div className={style.leftSide}></div>
+                <div className={style.leftSide}>
+                  <div className={style.title}>Задачи</div>
+                </div>
                 <Button text={() => <PlusOutlined />} type='primary' size='square' onClick={onCreate} />
               </div>
 
@@ -69,9 +72,7 @@ export const TaskList: React.FC<IProps> = observer((props) => {
                       key={task.id}
                     />
                   ))}
-                  {!goalTasksStore.tasks.length && (
-                    <div className={style.noTasks}>Задачи для данной цели отсутствуют</div>
-                  )}
+                  {!goalTasksStore.tasks.length && <div className={style.noTasks}>Задачи отсутствуют</div>}
                 </div>
               )}
             </div>
