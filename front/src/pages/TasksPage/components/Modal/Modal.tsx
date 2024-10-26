@@ -77,7 +77,13 @@ export const Modal: React.FC<IProps> = observer((props) => {
               form={form}
               onFinish={onSubmit}
             >
-              <Form.Item<INewTask> name='title' rules={[{ required: true, message: 'Обязательное поле' }]}>
+              <Form.Item<INewTask>
+                name='title'
+                rules={[
+                  { required: true, message: 'Обязательное поле' },
+                  { max: 100, message: 'Максимум 100 символов' },
+                ]}
+              >
                 <TextArea autoSize={{ minRows: 3, maxRows: 3 }} placeholder='Описание задачи' />
               </Form.Item>
 
