@@ -1,4 +1,4 @@
-export class NewUserDto {
+export class UserDto {
   tgId: string;
 
   login?: string;
