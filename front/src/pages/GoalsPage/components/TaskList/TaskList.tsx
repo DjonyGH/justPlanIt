@@ -6,7 +6,7 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button } from '../../../../components/Button/Button'
 import { ITask } from '../../../TasksPage/types'
 import { Task } from '../../../TasksPage/components/Task/Task'
-import { Modal } from '../../../TasksPage/components/Modal/Modal'
+import { TaskModal } from '../../../TasksPage/components/TaskModal/TaskModal'
 import { IGoal } from '../../types'
 
 interface IProps {
@@ -77,7 +77,7 @@ export const TaskList: React.FC<IProps> = observer((props) => {
               )}
             </div>
           </div>
-          <Modal task={selectedTask} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+          <TaskModal task={selectedTask} goalId={goal?.id} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
         </>
       )}
     </>

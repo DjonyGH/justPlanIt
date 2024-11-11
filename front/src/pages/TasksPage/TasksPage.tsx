@@ -6,7 +6,7 @@ import { ITask } from './types'
 import { getDate, getDayName, ucFirst } from '../../utils/utils'
 import { Task } from './components/Task/Task'
 import { Menu } from './components/Menu/Menu'
-import { Modal } from './components/Modal/Modal'
+import { TaskModal } from './components/TaskModal/TaskModal'
 
 export enum ETab {
   Current,
@@ -76,7 +76,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
         )}
       </div>
 
-      <Modal task={selectedTask} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <TaskModal task={selectedTask} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   )
 })

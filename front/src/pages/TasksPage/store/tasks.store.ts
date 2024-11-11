@@ -17,7 +17,7 @@ export interface ITasksStore {
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   sendToCurrentDay: (taskId: string) => Promise<boolean | undefined>
-  createTask: (newTask: INewTask) => Promise<ITask | undefined>
+  createTask: (newTask: INewTask, goalId?: string) => Promise<ITask | undefined>
   updateTask: (taskId: string, newTask: INewTask) => Promise<ITask | undefined>
   removeTask: (taskId: string) => Promise<boolean | undefined>
 }
@@ -100,10 +100,10 @@ export default class TasksStore implements ITasksStore {
     }
   }
 
-  async createTask(newTask: INewTask) {
+  async createTask(newTask: INewTask, goalId?: string) {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
-      let createdTask: ITask = await http.post<ITask>(`/tasks`, newTask)
+      let createdTask: ITask = await http.post<ITask>(`/tasks?${goalId ? 'goalId=' + goalId : ''}`, newTask)
 
       return {
         ...createdTask,

@@ -4,7 +4,7 @@ import style from './styles.module.scss'
 import { useStore } from '../..'
 import { IGoal } from './types'
 import { Menu } from './components/Menu/Menu'
-import { Modal } from './components/Modal/Modal'
+import { GoalModal } from './components/GoalModal/GoalModal'
 import { getDate } from '../../utils/utils'
 import { Goal } from './components/Goal/Goal'
 
@@ -52,7 +52,7 @@ export const GoalsPage: React.FC<IProps> = observer(() => {
         ))}
       </div>
 
-      <Modal goal={selectedGoal} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <GoalModal goal={selectedGoal} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   )
 })

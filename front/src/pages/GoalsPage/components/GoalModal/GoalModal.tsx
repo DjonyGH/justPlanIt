@@ -15,7 +15,7 @@ interface IProps {
   setIsModalOpen: (value: boolean) => void
 }
 
-export const Modal: React.FC<IProps> = observer((props) => {
+export const GoalModal: React.FC<IProps> = observer((props) => {
   const { goal, isModalOpen, setIsModalOpen } = props
 
   const { goalsStore } = useStore()

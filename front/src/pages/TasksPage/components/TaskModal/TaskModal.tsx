@@ -13,14 +13,17 @@ import ru_RU from 'antd/lib/locale/ru_RU'
 
 interface IProps {
   task?: ITask
+  goalId?: string
   isModalOpen: boolean
   setIsModalOpen: (value: boolean) => void
 }
 
-export const Modal: React.FC<IProps> = observer((props) => {
-  const { task, isModalOpen, setIsModalOpen } = props
+export const TaskModal: React.FC<IProps> = observer((props) => {
+  const { task, goalId, isModalOpen, setIsModalOpen } = props
 
-  const { tasksStore } = useStore()
+  const { tasksStore, goalTasksStore } = useStore()
+
+  const store = goalId ? goalTasksStore : tasksStore
 
   const [form] = Form.useForm<INewTask>()
 
@@ -43,13 +46,13 @@ export const Modal: React.FC<IProps> = observer((props) => {
 
     let isSuccess
     if (!task) {
-      isSuccess = await tasksStore.createTask(newTask)
+      isSuccess = await store.createTask(newTask, goalId)
     } else {
-      isSuccess = await tasksStore.updateTask(task.id, newTask)
+      isSuccess = await store.updateTask(task.id, newTask)
     }
 
     if (isSuccess) {
-      tasksStore.fetchTasks()
+      store.fetchTasks(goalId)
       // const tasks = [createdTask, ...tasksStore.tasks]
       // tasksStore.setTasks(tasks)
       form.resetFields()

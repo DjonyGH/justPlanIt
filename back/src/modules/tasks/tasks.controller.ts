@@ -96,12 +96,15 @@ export class TasksController {
   @Post()
   @UseGuards(JWTGuard)
   async createTask(
+    @Query() query: { goalId?: string },
     @Session() session: Record<string, any>,
     @Body() task: CreateTaskDto,
   ) {
     console.log('controller: createTask', task);
     const userId = getGUIDFromString(session.userId);
-    return this.tasksSevice.createTask(task, userId);
+    const goalId = query.goalId ? getGUIDFromString(query.goalId) : undefined;
+
+    return this.tasksSevice.createTask(task, userId, goalId);
   }
 
   // Удаляет задачу
