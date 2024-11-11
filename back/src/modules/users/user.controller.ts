@@ -17,6 +17,7 @@ export class UserController {
 
   // Возвращает юзера или создает нового
   @Post()
+  @UseGuards(JWTGuard)
   async getUserOrCreate(@Body() user: NewUserDto) {
     console.log('controller: getUserOrCreate');
 

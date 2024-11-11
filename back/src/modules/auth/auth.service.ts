@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserModel } from '../users/user.model';
-import { CheckDataDto } from './dto/checkData.dto';
-import { UserDto } from './dto/user.dto';
+import { CheckData, UserData } from './dto/login.dto';
 import { UserService } from '../users/user.service';
 import { HmacSHA256 } from 'crypto-js';
 import { JwtService } from '@nestjs/jwt';
+import { LOGIN_OR_PASSWORD_ERROR } from 'src/errors/error.consts';
 
 const token = '7049203455:AAGv_Kj2-E2nAsAq_tR9b4Ipt5ru-1h4_9c';
 
@@ -16,38 +16,35 @@ export class AuthService {
   ) {}
 
   async login(
-    checkDataDto: CheckDataDto,
-    userDto: UserDto,
-  ): Promise<{ user: UserModel; accessToken: string }> {
-    console.log('Service: login');
-    const { accessToken } = await this.checkTgDataAndCreateToken(
-      checkDataDto,
-      userDto,
-    );
+    checkDataDto: CheckData,
+    userDto: UserData,
+  ): Promise<{ accessToken: string; user: UserModel }> {
+    console.log('Service: checkTgDataAndCreateToken');
 
-    if (!accessToken) return;
+    const secretKey = HmacSHA256(token, 'WebAppData');
+    const check = HmacSHA256(checkDataDto.checkData, secretKey).toString();
+
+    console.log('LOGIN', check);
+    console.log('LOGIN', checkDataDto.hash);
+
+    // if (check !== checkDataDto.hash)
+    //   throw new HttpException(LOGIN_OR_PASSWORD_ERROR, HttpStatus.NOT_FOUND);
 
     const user = await this.userSevice.getUserByTgId(
       userDto.tgId,
       userDto.userName,
       userDto.login,
     );
-    return { user, accessToken };
-  }
 
-  async checkTgDataAndCreateToken(
-    checkDataDto: CheckDataDto,
-    userDto: UserDto,
-  ): Promise<{ accessToken: string }> {
-    console.log('Service: checkTgDataAndCreateToken');
+    const userPayload = {
+      tgId: user.tgId,
+      userId: user._id,
+      login: user.login,
+      userName: user.userName,
+    };
 
-    const secretKey = HmacSHA256(token, 'WebAppData');
-    const check = HmacSHA256(checkDataDto.checkData, secretKey).toString();
+    const accessToken = await this.jwtService.signAsync(userPayload);
 
-    if (check !== checkDataDto.hash) return;
-
-    const accessToken = await this.jwtService.signAsync(userDto);
-
-    return { accessToken };
+    return { accessToken, user };
   }
 }

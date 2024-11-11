@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 import { action, makeObservable, observable } from 'mobx'
 import http, { BASE_URL } from '../services/http.service'
-import { IAuthResponce, IRefreshBody, IRefreshResponce, IUser, IUserNew } from '../types/types'
+import { IAuthResponce, ICheckData, IUser, IUserNew } from '../types/types'
 import { RootStore } from './root.store'
 
 export interface IUserStore {
@@ -9,10 +9,7 @@ export interface IUserStore {
   user?: IUser
   setIsAuth: (data: boolean) => void
   setUser: (data: IUser) => void
-  signUp: (user: IUserNew, code: string) => Promise<boolean>
-  checkAuth: () => Promise<void>
-  login: (login: string, password: string) => Promise<boolean>
-  logout: () => Promise<void>
+  login: (checkData: ICheckData, userData: IUserNew) => Promise<boolean>
   fetchUser: (newUser: IUserNew) => Promise<void>
 }
 
@@ -26,9 +23,8 @@ export default class UserStore implements IUserStore {
       user: observable,
       setIsAuth: action,
       setUser: action,
-      checkAuth: action,
-      logout: action,
       fetchUser: action,
+      login: action,
     })
   }
 
@@ -60,78 +56,27 @@ export default class UserStore implements IUserStore {
     }
   }
 
-  async signUp(user: IUserNew, code: string): Promise<boolean> {
+  async login(checkData: ICheckData, userData: IUserNew): Promise<boolean> {
     try {
       this.rootStore.loaderStore.setIsLoading(true)
 
-      await axios.post<any, AxiosResponse<IAuthResponce>>(`${BASE_URL}/users`, {
-        user,
-        code,
-      })
-      return true
-    } catch (error: any) {
-      this.setIsAuth(false)
-      return false
-    } finally {
-      this.rootStore.loaderStore.setIsLoading(false)
-    }
-  }
-
-  async checkAuth() {
-    try {
-      this.rootStore.loaderStore.setIsLoading(true)
-
-      const refreshToken = localStorage.getItem('refresh-token')
-      if (!refreshToken) throw new Error('refreshToken not found')
-
-      const { data } = await axios.post<any, AxiosResponse<IRefreshResponce>>(`${BASE_URL}/token/refresh`, {
-        refreshToken,
+      const { data } = await axios.post<any, AxiosResponse<IAuthResponce>>(`${BASE_URL}/auth`, {
+        checkData,
+        userData,
       })
 
       const { user, accessToken } = data
       localStorage.setItem('access-token', accessToken)
       this.setIsAuth(true)
-      this.setUser(user)
-    } catch (error: any) {
-      this.setIsAuth(false)
-    } finally {
-      this.rootStore.loaderStore.setIsLoading(false)
-    }
-  }
-
-  async login(login: string, password: string): Promise<boolean> {
-    try {
-      this.rootStore.loaderStore.setIsLoading(true)
-
-      const { data } = await axios.post<any, AxiosResponse<IAuthResponce>>(`${BASE_URL}/auth/login`, {
-        login,
-        password,
+      this.setUser({
+        ...user,
+        //@ts-ignore
+        id: user._id,
       })
-
-      const { user, accessToken, refreshToken } = data
-      localStorage.setItem('access-token', accessToken)
-      localStorage.setItem('refresh-token', refreshToken)
-      this.setIsAuth(true)
-      this.setUser(user)
       return true
     } catch (error: any) {
       this.setIsAuth(false)
       return false
-    } finally {
-      this.rootStore.loaderStore.setIsLoading(false)
-    }
-  }
-
-  async logout() {
-    try {
-      this.rootStore.loaderStore.setIsLoading(true)
-      await http.post<unknown, IRefreshBody>('/auth/logout', { refreshToken: localStorage.getItem('refresh-token') })
-
-      localStorage.removeItem('access-token')
-      localStorage.removeItem('refresh-token')
-      this.setIsAuth(false)
-      this.setUser(undefined)
-    } catch (error: any) {
     } finally {
       this.rootStore.loaderStore.setIsLoading(false)
     }

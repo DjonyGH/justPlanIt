@@ -24,6 +24,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const [selectedTask, setSelectedTask] = useState<ITask | undefined>()
 
   useEffect(() => {
+    console.log('TasksPage useEffect', userStore.user?.id)
     if (!userStore.user?.id) return
     tasksStore.fetchTasks()
 
@@ -64,7 +65,7 @@ export const TasksPage: React.FC<IProps> = observer(() => {
             </div>
           ))}
 
-        {tab === ETab.WithoutDate && (
+        {tab === ETab.WithoutDate && !!tasksStore.tasksWithoutDate.length && (
           <div className={style.taskList}>
             {tasksStore.tasksWithoutDate
               .sort((a, b) => a.order - b.order)

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { IAuthResponce, IHttpService } from '../types/types'
+import { IHttpService } from '../types/types'
 
 export const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -15,31 +15,6 @@ class HttpService implements IHttpService {
       config.headers && (config.headers.Authorization = `Bearer ${localStorage.getItem('access-token')}`)
       return config
     })
-
-    this.http.interceptors.response.use(
-      (config: AxiosResponse) => {
-        return config
-      },
-      async (error) => {
-        const originalRequest = error.config
-        if (error.responce.status === 401 && error.config && !error.config._isRetry) {
-          originalRequest._isRetry = true
-          try {
-            const responce = await axios.post<any, AxiosResponse<IAuthResponce>>(`${BASE_URL}/token/refresh`, {
-              refreshToken: localStorage.getItem('refresh-token'),
-            })
-            console.log('test')
-
-            localStorage.setItem('access-token', responce.data.accessToken)
-            localStorage.setItem('refresh-token', responce.data.refreshToken)
-            this.http.request(originalRequest)
-          } catch (error) {
-            console.log('Не авторизован')
-          }
-        }
-        throw error
-      }
-    )
   }
 
   async get<T>(url: string): Promise<T> {

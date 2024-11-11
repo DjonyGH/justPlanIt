@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import { USER_NOT_FOUND } from 'src/errors/error.consts';
-import { CreateUserDto } from './dto/create.user.dto';
+import { NewUserDto } from './dto/create.user.dto';
 import { IUserResponse } from './types';
 import { UserModel } from './user.model';
 import { GUID } from 'src/types';
@@ -32,17 +32,16 @@ export class UserService {
     console.log('service: getUserByTgId');
     try {
       const user = await this.userModel.findOne({ tgId });
-      console.log('user', user);
+
       if (user) {
         return user;
       } else {
-        console.log('no user');
         const newUser = await this.userModel.create({
           tgId,
           login,
           userName,
         });
-        console.log('newUser', newUser);
+
         if (newUser) {
           return newUser;
         }
@@ -62,7 +61,7 @@ export class UserService {
     }
   }
 
-  async createUser(user: CreateUserDto) {}
+  async createUser(user: NewUserDto) {}
 
   async updateUser() {}
 

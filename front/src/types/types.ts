@@ -4,22 +4,11 @@ export interface IHttpService {
   put: <T>(url: string, updData: T) => Promise<T>
 }
 
-export enum ELiga {
-  Common = 'common', // серый цвет, не ограниченное кол-во участников (150 первых переходят в master лигу)
-  Master = 'master', // синий цвет, 500 участников (50 первых переходят в epic лигу, 100 последних переходят в common лигу)
-  Epic = 'epic', // фиолетовый цвет, 100 участников (50 последних переходят в master лигу)
-}
-
 export interface IUser {
   id: string
   tgId: number
   userName: string
   login: string
-  liga: ELiga
-  // globalRank: number
-  // email: string
-  // bonuses: number
-  // w3Address?: string
 }
 
 export interface IUserNew {
@@ -28,9 +17,13 @@ export interface IUserNew {
   login?: string
 }
 
+export interface ICheckData {
+  hash: string
+  checkData: string
+}
+
 export interface IAuthResponce {
   accessToken: string
-  refreshToken: string
   user: IUser
 }
 

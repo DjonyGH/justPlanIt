@@ -1,6 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CheckDataDto } from './dto/checkData.dto';
-import { UserDto } from './dto/user.dto';
+import { loginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -9,10 +8,14 @@ export class AuthController {
 
   // Проверяет телеграм данные юзера и возвращает юзера и токен
   @Post()
-  async login(@Body() checkDataDto: CheckDataDto, userDto: UserDto) {
+  async login(@Body() loginDto: loginDto) {
     console.log('controller: login');
 
-    const res = await this.authSevice.login(checkDataDto, userDto);
+    const res = await this.authSevice.login(
+      loginDto.checkData,
+      loginDto.userData,
+    );
+
     return res;
   }
 }

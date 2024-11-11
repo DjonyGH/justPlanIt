@@ -28,7 +28,7 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
-  app.use(user);
+  // app.use(user);
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3001);
 }

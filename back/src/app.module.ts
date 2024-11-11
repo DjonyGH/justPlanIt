@@ -9,6 +9,7 @@ import { getMongoConfig } from './configs/mongo.config';
 import { UserModule } from './modules/users/user.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { GoalsModule } from './modules/goals/goals.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { GoalsModule } from './modules/goals/goals.module';
     UserModule,
     TasksModule,
     GoalsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

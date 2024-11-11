@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Session,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { getGUIDFromString } from 'src/utils/getObjectIdFromString';
@@ -17,7 +18,7 @@ import {
   CurrentDateDto,
 } from './dto/update.task.dto';
 import { CreateTaskDto } from './dto/create.task.dto';
-import { INewTask } from './types';
+import { JWTGuard } from 'src/jwt/jwt.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -25,12 +26,14 @@ export class TasksController {
 
   // Возвращает все задачи для юзера
   @Get()
+  @UseGuards(JWTGuard)
   async getTasks(
     @Query() query: { goalId?: string },
     @Session() session: Record<string, any>,
   ) {
-    // console.log('controller: getTasks');
+    console.log('controller: getTasks');
     const userId = getGUIDFromString(session.userId);
+
     const goalId = query.goalId && getGUIDFromString(query.goalId);
     if (goalId) {
       return this.tasksSevice.getAllTasksByGoalId(goalId);
@@ -40,6 +43,7 @@ export class TasksController {
 
   // Обновляет статус задачи
   @Put(':id/complete')
+  @UseGuards(JWTGuard)
   async completeTask(@Param('id') _id: string, @Body() task: CompleteTaskDto) {
     console.log('controller: completeTask');
     const taskId = getGUIDFromString(_id);
@@ -48,6 +52,7 @@ export class TasksController {
 
   // Изменяет порядок задач
   @Put(':id/order')
+  @UseGuards(JWTGuard)
   async changeOrderTask(
     @Param('id') _id: string,
     @Body() data: ChangeOrderTaskDto,
@@ -59,6 +64,7 @@ export class TasksController {
 
   // Переносит задачу на след день
   @Put(':id/next-day')
+  @UseGuards(JWTGuard)
   async sendTaskToNextDay(@Param('id') _id: string) {
     console.log('controller: sendTaskToNextDay');
     const taskId = getGUIDFromString(_id);
@@ -67,6 +73,7 @@ export class TasksController {
 
   // Переносит задачу на текущий день
   @Put(':id/current-day')
+  @UseGuards(JWTGuard)
   async sendTaskToCurrentDay(
     @Param('id') _id: string,
     @Body() data: CurrentDateDto,
@@ -78,6 +85,7 @@ export class TasksController {
 
   // Обновляет новую задачу
   @Put(':id')
+  @UseGuards(JWTGuard)
   async updateTask(@Param('id') _id: string, @Body() task: CreateTaskDto) {
     console.log('controller: updateTask');
     const taskId = getGUIDFromString(_id);
@@ -86,6 +94,7 @@ export class TasksController {
 
   // Создает новую задачу
   @Post()
+  @UseGuards(JWTGuard)
   async createTask(
     @Session() session: Record<string, any>,
     @Body() task: CreateTaskDto,
@@ -97,6 +106,7 @@ export class TasksController {
 
   // Удаляет задачу
   @Delete(':id')
+  @UseGuards(JWTGuard)
   async removeTask(@Param('id') _id: string) {
     console.log('controller: completeTask');
     const taskId = getGUIDFromString(_id);
