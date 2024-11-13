@@ -19,16 +19,13 @@ export class AuthService {
     checkDataDto: CheckData,
     userDto: UserData,
   ): Promise<{ accessToken: string; user: UserModel }> {
-    console.log('Service: checkTgDataAndCreateToken');
+    console.log('Service: login');
 
     const secretKey = HmacSHA256(token, 'WebAppData');
     const check = HmacSHA256(checkDataDto.checkData, secretKey).toString();
 
-    console.log('LOGIN', check);
-    console.log('LOGIN', checkDataDto.hash);
-
-    // if (check !== checkDataDto.hash)
-    //   throw new HttpException(LOGIN_OR_PASSWORD_ERROR, HttpStatus.NOT_FOUND);
+    if (check !== checkDataDto.hash)
+      throw new HttpException(LOGIN_OR_PASSWORD_ERROR, HttpStatus.NOT_FOUND);
 
     const user = await this.userSevice.getUserByTgId(
       userDto.tgId,

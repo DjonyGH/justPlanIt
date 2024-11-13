@@ -6,14 +6,16 @@ import { getCurrentDateUTC, isCurrentDate, isFutureDate, isPastDate } from '../.
 
 export interface ITasksStore {
   tasks: ITask[]
+  goalTasks: Record<string, ITask[]>
   expanded: TExpanded
   currentTasks: ITask[][]
   futureTasks: ITask[][]
   tasksWithoutDate: ITask[]
   setTasks: (data: ITask[]) => void
+  setGoalTasks: (goalId: string, data: ITask[]) => void
   setExpanded: (value: string | null) => void
   fetchTasks: (goalId?: string) => Promise<void>
-  completeTasks: (taskId: string, isDone: boolean) => Promise<void>
+  completeTasks: (taskId: string, isDone: boolean) => Promise<boolean | undefined>
   changeOrderTask: (taskId: string, changeOrder: 1 | -1) => Promise<boolean | undefined>
   sendToNextDay: (taskId: string) => Promise<boolean | undefined>
   sendToCurrentDay: (taskId: string) => Promise<boolean | undefined>
@@ -24,6 +26,7 @@ export interface ITasksStore {
 
 export default class TasksStore implements ITasksStore {
   tasks: ITask[] = []
+  goalTasks: Record<string, ITask[]> = {}
   expanded: TExpanded = {}
 
   constructor(private rootStore: RootStore) {
@@ -32,6 +35,10 @@ export default class TasksStore implements ITasksStore {
 
   setTasks(data: ITask[]) {
     this.tasks = data
+  }
+
+  setGoalTasks(goalId: string, data: ITask[]) {
+    this.goalTasks[goalId] = data
   }
 
   setExpanded(value: string | null) {
@@ -43,7 +50,14 @@ export default class TasksStore implements ITasksStore {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
       let tasks: ITask[] = await http.get<ITask[]>(`/tasks?${goalId ? 'goalId=' + goalId : ''}`)
-      this.setTasks(tasks.map((i) => ({ ...i, id: i._id })))
+      if (goalId) {
+        this.setGoalTasks(
+          goalId,
+          tasks.map((i) => ({ ...i, id: i._id }))
+        )
+      } else {
+        this.setTasks(tasks.map((i) => ({ ...i, id: i._id })))
+      }
     } catch (e: unknown) {
       console.warn(e)
     } finally {
@@ -55,6 +69,7 @@ export default class TasksStore implements ITasksStore {
     try {
       // this.rootStore.loaderStore.setIsLoading(true)
       await http.put<ITask>(`/tasks/${taskId}/complete`, { isDone })
+      return true
     } catch (e: unknown) {
       console.warn(e)
     } finally {

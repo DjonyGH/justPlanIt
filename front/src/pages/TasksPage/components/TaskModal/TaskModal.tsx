@@ -21,9 +21,7 @@ interface IProps {
 export const TaskModal: React.FC<IProps> = observer((props) => {
   const { task, goalId, isModalOpen, setIsModalOpen } = props
 
-  const { tasksStore, goalTasksStore } = useStore()
-
-  const store = goalId ? goalTasksStore : tasksStore
+  const { tasksStore: store } = useStore()
 
   const [form] = Form.useForm<INewTask>()
 
@@ -53,11 +51,9 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
 
     if (isSuccess) {
       store.fetchTasks(goalId)
-      // const tasks = [createdTask, ...tasksStore.tasks]
-      // tasksStore.setTasks(tasks)
       form.resetFields()
       setIsModalOpen(false)
-      tasksStore.setExpanded(null)
+      store.setExpanded(null)
     }
   }
 
@@ -120,7 +116,6 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
           </div>
           <div className={style.footer}>
             <Button
-              key={1}
               text={!task ? 'Создать' : 'Редактировать'}
               size='min'
               type='primary'

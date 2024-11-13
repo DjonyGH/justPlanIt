@@ -21,19 +21,17 @@ import { useStore } from '../../../..'
 
 interface IProps {
   task: ITask
+  goalId?: string
   setIsModalOpen: (value: boolean) => void
   setSelectedTask: (value: ITask) => void
   isFirst?: boolean
   isLast?: boolean
-  isGoalTask?: boolean
 }
 
 export const Task: React.FC<IProps> = observer((props) => {
-  const { task, setIsModalOpen, setSelectedTask, isFirst, isLast, isGoalTask } = props
+  const { task, goalId, setIsModalOpen, setSelectedTask, isFirst, isLast } = props
 
-  const { tasksStore, goalTasksStore } = useStore()
-
-  const store = isGoalTask ? goalTasksStore : tasksStore
+  const { tasksStore: store } = useStore()
 
   const onEdit = (task: ITask) => {
     setSelectedTask(task)
@@ -41,39 +39,30 @@ export const Task: React.FC<IProps> = observer((props) => {
   }
 
   const onChange = async (task: ITask, isDone: boolean) => {
-    await store.completeTasks(task.id, isDone)
-    const tasks = [...store.tasks]
-    const newTask = tasks.find((i) => i.id === task.id)
-    if (newTask) {
-      newTask.isDone = isDone
-    }
-    store.setTasks(tasks)
+    const isSuccess = await store.completeTasks(task.id, isDone)
+    isSuccess && store.fetchTasks(goalId)
   }
 
   const removeTask = async (id: string) => {
-    const isSucces = await store.removeTask(id)
-    if (isSucces) {
-      const tasks = store.tasks.filter((i) => i.id !== id)
-      store.setTasks(tasks)
-      store.setExpanded(null)
-    }
+    const isSuccess = await store.removeTask(id)
+    isSuccess && store.fetchTasks(goalId)
   }
 
   const orderDown = async (id: string) => {
     const isSuccess = await store.changeOrderTask(id, -1)
-    isSuccess && store.fetchTasks()
+    isSuccess && store.fetchTasks(goalId)
   }
   const orderUp = async (id: string) => {
     const isSuccess = await store.changeOrderTask(id, 1)
-    isSuccess && store.fetchTasks()
+    isSuccess && store.fetchTasks(goalId)
   }
   const toCurrentDay = async (id: string) => {
     const isSuccess = await store.sendToCurrentDay(id)
-    isSuccess && store.fetchTasks()
+    isSuccess && store.fetchTasks(goalId)
   }
   const toNextDay = async (id: string) => {
     const isSuccess = await store.sendToNextDay(id)
-    isSuccess && store.fetchTasks()
+    isSuccess && store.fetchTasks(goalId)
   }
 
   return (
@@ -95,17 +84,17 @@ export const Task: React.FC<IProps> = observer((props) => {
       <div className={style.edit}>
         <div
           className={`${style.controls} ${
-            !!store.expanded[task.id] ? (isGoalTask ? style.expanded3Items : style.expanded5Items) : ''
+            !!store.expanded[task.id] ? (goalId ? style.expanded3Items : style.expanded5Items) : ''
           }`}
         >
-          {!isGoalTask && (
+          {!goalId && (
             <CaretUpOutlined
               style={{ color: 'var(--gray)', fontSize: '22px' }}
               className={`${isFirst ? style.disabled : ''}`}
               onClick={() => !isFirst && orderDown(task.id)}
             />
           )}
-          {!isGoalTask && (
+          {!goalId && (
             <CaretDownOutlined
               style={{ color: 'var(--gray)', fontSize: '22px' }}
               className={`${isLast ? style.disabled : ''}`}
@@ -118,7 +107,7 @@ export const Task: React.FC<IProps> = observer((props) => {
               onClick={() => toCurrentDay(task.id)}
             />
           )}
-          {!isGoalTask && (isCurrentDate(task.date) || !task.date) && (
+          {!goalId && (isCurrentDate(task.date) || !task.date) && (
             <FastForwardOutlined
               style={{ color: 'var(--gray)', fontSize: '22px' }}
               onClick={() => toNextDay(task.id)}

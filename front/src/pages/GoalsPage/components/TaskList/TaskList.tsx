@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import style from './styles.module.scss'
 import { useStore } from '../../../..'
@@ -10,7 +10,7 @@ import { TaskModal } from '../../../TasksPage/components/TaskModal/TaskModal'
 import { IGoal } from '../../types'
 
 interface IProps {
-  goal: IGoal | undefined
+  goal: IGoal
   isOpen: boolean
   setIsOpen: (value: boolean) => void
 }
@@ -18,7 +18,7 @@ interface IProps {
 export const TaskList: React.FC<IProps> = observer((props) => {
   const { goal, isOpen, setIsOpen } = props
 
-  const { goalTasksStore } = useStore()
+  const { tasksStore } = useStore()
 
   const [selectedTask, setSelectedTask] = useState<ITask | undefined>()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -27,19 +27,21 @@ export const TaskList: React.FC<IProps> = observer((props) => {
   const load = async () => {
     if (!isOpen || !goal) return
     setIsLoading(true)
-    await goalTasksStore.fetchTasks(goal.id)
+    await tasksStore.fetchTasks(goal.id)
     setIsLoading(false)
   }
 
-  useEffect(() => {
-    load()
+  useLayoutEffect(() => {
+    !tasksStore.goalTasks[goal.id] && load()
   }, [goal?.id, isOpen]) // eslint-disable-line
 
   const onCreate = () => {
     setSelectedTask(undefined)
-    goalTasksStore.setExpanded(null)
+    tasksStore.setExpanded(null)
     setIsModalOpen(true)
   }
+
+  const goalTasks: ITask[] = tasksStore.goalTasks[goal.id] || []
 
   return (
     <>
@@ -63,16 +65,16 @@ export const TaskList: React.FC<IProps> = observer((props) => {
 
               {!isLoading && (
                 <div className={style.taskList}>
-                  {goalTasksStore.tasks.map((task) => (
+                  {goalTasks.map((task) => (
                     <Task
                       task={task}
+                      goalId={goal.id}
                       setIsModalOpen={setIsModalOpen}
                       setSelectedTask={setSelectedTask}
-                      isGoalTask
                       key={task.id}
                     />
                   ))}
-                  {!goalTasksStore.tasks.length && <div className={style.noTasks}>Задачи отсутствуют</div>}
+                  {!isLoading && !goalTasks.length && <div className={style.noTasks}>Задачи отсутствуют</div>}
                 </div>
               )}
             </div>

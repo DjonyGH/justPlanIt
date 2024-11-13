@@ -24,7 +24,6 @@ export const TasksPage: React.FC<IProps> = observer(() => {
   const [selectedTask, setSelectedTask] = useState<ITask | undefined>()
 
   useEffect(() => {
-    console.log('TasksPage useEffect', userStore.user?.id)
     if (!userStore.user?.id) return
     tasksStore.fetchTasks()
 

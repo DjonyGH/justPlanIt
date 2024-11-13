@@ -13,7 +13,6 @@ export class RootStore {
   userStore: IUserStore
   tasksStore: ITasksStore
   goalsStore: IGoalsStore
-  goalTasksStore: ITasksStore
 
   constructor() {
     makeObservable(this, {})
@@ -23,6 +22,5 @@ export class RootStore {
     this.userStore = new UserStore(this)
     this.tasksStore = new TasksStore(this)
     this.goalsStore = new GoalsStore(this)
-    this.goalTasksStore = new TasksStore(this)
   }
 }
