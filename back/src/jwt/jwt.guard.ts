@@ -17,12 +17,11 @@ export class JWTGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    console.log('JWTGuard');
     try {
       const authHeader = req.headers.authorization;
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
-      console.log('token', token);
+
       if (bearer !== 'Bearer' || !token) {
         throw new HttpException(USER_NOT_AUTH, HttpStatus.NOT_FOUND);
       }

@@ -37,10 +37,6 @@ export const Header: React.FC<IProps> = observer(() => {
       <div className={style.settings}>
         <SettingOutlined style={{ fontSize: '20px' }} />
       </div>
-      {/* <div className={style.leftSide} onClick={() => appStore.tg?.close()}>
-        {appStore.tg?.initDataUnsafe?.user?.first_name + ' ' + appStore.tg?.initDataUnsafe?.user?.last_name}
-      </div>
-      <div className={style.rightSide}>{appStore.tg?.initDataUnsafe?.user?.id}</div> */}
     </div>
   )
 })

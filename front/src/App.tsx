@@ -9,6 +9,7 @@ import { Notification } from './components/Notification/Notification'
 import { IRouteValue, routes } from './routing'
 import { useStore } from '.'
 import { NotFound } from './pages/NotFount/NotFound'
+import { NotAuth } from './pages/NotAuth/NotAuth'
 
 const tg = window.Telegram.WebApp
 tg.BackButton.isVisible = true
@@ -49,6 +50,10 @@ const App: React.FC = observer(() => {
     login()
   }, []) // eslint-disable-line
 
+  if (store.isAuth === undefined) return null
+
+  if (!store.isAuth) return <NotAuth/>
+
   return (
     <div className='App'>
       <Switch>
@@ -62,9 +67,6 @@ const App: React.FC = observer(() => {
                 ))}
                 <Route path={'/*'} component={NotFound} />
               </Switch>
-              {/* <div style={{ display: 'flex', flexDirection: 'column', width: '100%', wordBreak: 'break-all' }}>
-                {hash === check ? 'true' : 'false'}
-              </div> */}
             </Content>
             <Notification />
           </Main>

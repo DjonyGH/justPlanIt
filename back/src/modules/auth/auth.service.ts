@@ -6,7 +6,7 @@ import { HmacSHA256 } from 'crypto-js';
 import { JwtService } from '@nestjs/jwt';
 import { LOGIN_OR_PASSWORD_ERROR } from 'src/errors/error.consts';
 
-const token = '7049203455:AAGv_Kj2-E2nAsAq_tR9b4Ipt5ru-1h4_9c';
+const token = '7278201241:AAH6eFlL9co_lmVtync_MyAziw0dcSmuqqs';
 
 @Injectable()
 export class AuthService {

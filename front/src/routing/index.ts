@@ -17,12 +17,12 @@ export type TRouteValue = Record<TRouteKey, IRouteValue>
 
 export const routes: TRouteValue = {
   tasks: {
-    path: '/tasks',
+    path: '/',
     component: TasksPage,
     exact: true,
   },
   goals: {
-    path: '/',
+    path: '/goals',
     component: GoalsPage,
     exact: true,
   },
