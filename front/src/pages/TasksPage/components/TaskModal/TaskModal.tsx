@@ -63,7 +63,7 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
         <div className={style.modal}>
           <div className={style.header}>
             {!task ? 'Новая задача' : 'Редактирование'}
-            <div onClick={() => setIsModalOpen(false)}>
+            <div  className={style.close} onClick={() => setIsModalOpen(false)}>
               <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
             </div>
           </div>
@@ -103,7 +103,7 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
                 </Form.Item>
               </ConfigProvider>
 
-              <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+              <Form.Item style={{ display: 'inline-block', textAlign: 'right', width: '50%' }}>
                 <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
                   Без даты
                 </Checkbox>

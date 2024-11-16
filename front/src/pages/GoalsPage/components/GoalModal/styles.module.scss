@@ -10,19 +10,29 @@
   left: 0;
   z-index: 10;
   background-color: var(--bg);
+  padding-bottom: 10px;
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     height: 40px;
+    min-height: 40px;
     border-bottom: 1px solid var(--bgLight);
     font-size: 16px;
+    .close {
+      width: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
   .body {
     display: flex;
     width: 100%;
+    height: calc(100% - 90px);
     padding: 20px 0;
+    overflow-y: auto;
   }
   .footer {
     display: flex;

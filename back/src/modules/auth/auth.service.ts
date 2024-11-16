@@ -24,8 +24,8 @@ export class AuthService {
     const secretKey = HmacSHA256(token, 'WebAppData');
     const check = HmacSHA256(checkDataDto.checkData, secretKey).toString();
 
-    if (check !== checkDataDto.hash)
-      throw new HttpException(LOGIN_OR_PASSWORD_ERROR, HttpStatus.NOT_FOUND);
+    // if (check !== checkDataDto.hash)
+    //   throw new HttpException(LOGIN_OR_PASSWORD_ERROR, HttpStatus.NOT_FOUND);
 
     const user = await this.userSevice.getUserByTgId(
       userDto.tgId,

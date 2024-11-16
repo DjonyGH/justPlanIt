@@ -153,7 +153,7 @@ export const GoalModal: React.FC<IProps> = observer((props) => {
         <div className={style.modal}>
           <div className={style.header}>
             {!goal ? 'Новая цель' : 'Редактирование'}
-            <div onClick={() => setIsModalOpen(false)}>
+            <div className={style.close} onClick={() => setIsModalOpen(false)}>
               <CloseOutlined style={{ color: 'var(--white)', fontSize: '18px' }} />
             </div>
           </div>
