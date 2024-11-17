@@ -12,7 +12,7 @@ import { NotFound } from './pages/NotFount/NotFound'
 import { NotAuth } from './pages/NotAuth/NotAuth'
 
 const tg = window.Telegram.WebApp
-tg.BackButton.isVisible = true
+tg.BackButton.isVisible = false
 
 const App: React.FC = observer(() => {
   const { userStore: store, appStore } = useStore()

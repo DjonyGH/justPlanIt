@@ -14,6 +14,7 @@
   line-height: 18px;
   font-weight: 300;
   letter-spacing: 0.5px;
+  word-break: break-all
 }
 .edit {
   display: flex;
@@ -29,23 +30,37 @@
   top: -5px;
   right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
   width: 0;
-  height: 30px;
+  height: 0;
   background-color: var(--bg);
   border-radius: 5px;
   overflow: hidden;
   box-sizing: content-box;
-  transition: width 0.5s ease-in-out, padding 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out, padding 0.5s ease-in-out;
+  & > div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
 }
 .expanded3Items {
-  padding: 0 10px;
-  width: 80px;
+  padding: 5px 10px;
+  width: 160px;
+  height: 85px;
 }
 .expanded5Items {
-  padding: 0 10px;
+  padding: 5px 10px;
   width: 160px;
+  height: 145px;
 }
 
 .disabled {

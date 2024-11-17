@@ -66,17 +66,25 @@ export const Goal: React.FC<IProps> = observer((props) => {
         </div>
 
         <div className={style.edit}>
-          <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expandedThreeItems : ''}`}>
-            <BarsOutlined
-              style={{ color: 'var(--gray)', fontSize: '20px' }}
-              onClick={() => {
-                setIsTaskListOpen(true)
-                goalsStore.setExpanded(null)
-              }}
-            />
+          <div className={`${style.controls} ${!!goalsStore.expanded[goal.id] ? style.expanded3Items : ''}`}>
+            <div onClick={() => {
+                  setIsTaskListOpen(true)
+                  goalsStore.setExpanded(null)
+                }}>
+              <BarsOutlined
+                style={{ color: 'var(--gray)', fontSize: '20px' }}
+              />
+              Задачи
+            </div>
 
-            <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(goal)} />
-            <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => onRemove(goal.id)} />
+            <div onClick={() => onEdit(goal)}>
+              <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} />
+              Редактировать
+            </div>
+            <div style={{ color: 'var(--red)' }} onClick={() => onRemove(goal.id)}>
+              <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} />
+              Удалить
+            </div>
           </div>
 
           <MoreOutlined

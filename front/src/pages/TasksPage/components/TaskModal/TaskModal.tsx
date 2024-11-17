@@ -29,7 +29,7 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
 
   useEffect(() => {
     form.resetFields()
-    setIsWithoutDate(!!task?.date)
+    setIsWithoutDate(task ? !task.date : false)
     if (task) {
       form.setFieldValue('title', task.title)
       form.setFieldValue('date', dayjs(task.date))
@@ -103,7 +103,7 @@ export const TaskModal: React.FC<IProps> = observer((props) => {
                 </Form.Item>
               </ConfigProvider>
 
-              <Form.Item style={{ display: 'inline-block', textAlign: 'right', width: '50%' }}>
+              <Form.Item style={{ display: 'inline-block', textAlign: 'left', width: '50%' }}>
                 <Checkbox checked={isWithoutDate} onChange={(e) => setIsWithoutDate(e.target.checked)}>
                   Без даты
                 </Checkbox>

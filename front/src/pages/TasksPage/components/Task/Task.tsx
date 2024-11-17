@@ -88,33 +88,47 @@ export const Task: React.FC<IProps> = observer((props) => {
           }`}
         >
           {!goalId && (
-            <CaretUpOutlined
-              style={{ color: 'var(--gray)', fontSize: '22px' }}
-              className={`${isFirst ? style.disabled : ''}`}
-              onClick={() => !isFirst && orderDown(task.id)}
-            />
+            <div onClick={() => !isFirst && orderDown(task.id)}>
+              <CaretUpOutlined
+                style={{ color: 'var(--gray)', fontSize: '22px' }}
+                className={`${isFirst ? style.disabled : ''}`}
+              />
+              Наверх
+            </div>
           )}
           {!goalId && (
-            <CaretDownOutlined
-              style={{ color: 'var(--gray)', fontSize: '22px' }}
-              className={`${isLast ? style.disabled : ''}`}
-              onClick={() => !isLast && orderUp(task.id)}
-            />
+            <div onClick={() => !isLast && orderUp(task.id)}>
+              <CaretDownOutlined
+                style={{ color: 'var(--gray)', fontSize: '22px' }}
+                className={`${isLast ? style.disabled : ''}`}
+              />
+              Вниз
+            </div>
           )}
           {(!isCurrentDate(task.date) || !task.date) && (
-            <PullRequestOutlined
-              style={{ color: 'var(--gray)', fontSize: '22px' }}
-              onClick={() => toCurrentDay(task.id)}
-            />
+            <div onClick={() => toCurrentDay(task.id)}>
+              <PullRequestOutlined
+                style={{ color: 'var(--gray)', fontSize: '22px' }}
+              />
+              На сегодня
+            </div>
           )}
           {!goalId && (isCurrentDate(task.date) || !task.date) && (
-            <FastForwardOutlined
-              style={{ color: 'var(--gray)', fontSize: '22px' }}
-              onClick={() => toNextDay(task.id)}
-            />
+            <div onClick={() => toNextDay(task.id)}>
+              <FastForwardOutlined
+                style={{ color: 'var(--gray)', fontSize: '22px' }}
+              />
+              На завтра
+            </div>
           )}
-          <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }} onClick={() => onEdit(task)} />
-          <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }} onClick={() => removeTask(task.id)} />
+          <div onClick={() => onEdit(task)}>
+            <EditOutlined style={{ color: 'var(--gray)', fontSize: '20px' }}  />
+            Редактировать
+          </div>
+          <div style={{ color: 'var(--red)' }} onClick={() => removeTask(task.id)}>
+            <DeleteOutlined style={{ color: 'var(--red)', fontSize: '20px' }}  />
+            Удалить
+          </div>
         </div>
 
         <MoreOutlined
